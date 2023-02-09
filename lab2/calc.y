@@ -1,4 +1,5 @@
 %{
+#define	YYSTYPE	double
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -18,7 +19,7 @@ int sym[26]; /* symbol table */
  char sIndex; /* symbol table index */
  nodeType *nPtr; /* node pointer */
 }; 
-%token<iValue>NUMBER
+%token <iValue> NUMBER
 %left	'+' '-'	  /* left associative, same precedence */
 %left	'*' '/'	  /* left assoc., higher precedence */
 %left '(' ')'
@@ -26,7 +27,7 @@ int sym[26]; /* symbol table */
 %%
 list:	  /* Parser: Productions */
 	| list '\n'
-	| list expr '\n'    { printf("\t%.8g\n", $2); }
+	| list expr '\n'    { printf("\t%.8g\n", ex($2)); freeNode($2);}
 	;
 expr:	  NUMBER	{ $$ = con($1); }
 	 expr '+' expr { $$ = opr('+', 2, $1, $3); }
