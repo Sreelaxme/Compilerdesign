@@ -1,5 +1,4 @@
 %{
-#define	YYSTYPE	double
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -18,31 +17,29 @@ int sym[26]; /* symbol table */
  int iValue; /* integer value */
  char sIndex; /* symbol table index */
  nodeType *nPtr; /* node pointer */
-}; 
-%token <iValue> NUMBER
-%left	'+' '-'	  /* left associative, same precedence */
-%left	'*' '/'	  /* left assoc., higher precedence */
-%left '(' ')'
+};
+%token <iValue> INTEGER
+
+%left '+' '-'
+%left '*' '/'
+
 %type <nPtr> expr
 %%
 list:	  /* Parser: Productions */
 	| list '\n'
-	| list expr '\n'    { printf("\t%.8g\n", ex($2)); freeNode($2);}
+	| list expr '\n'    { printf("\t%d\n", ex($2)); }
 	;
-expr:	  NUMBER	{ $$ = con($1); }
-	 expr '+' expr { $$ = opr('+', 2, $1, $3); }
-	 | expr '-' expr { $$ = opr('-', 2, $1, $3); }
-	 | expr '*' expr { $$ = opr('*', 2, $1, $3); }
-	 | expr '/' expr { $$ = opr('/', 2, $1, $3); } 
-	| '(' expr ')'	{ $$ = $2; }
-	;
-%%
-	/* end of grammar */
-
-#include <stdio.h>
-#include <ctype.h>
-char	*progname;	/* for error messages */
-int	lineno = 1;
+expr:
+ INTEGER { $$ = con($1); }
+ 
+ | expr '+' expr { $$ = opr('+', 2, $1, $3); }
+ | expr '-' expr { $$ = opr('-', 2, $1, $3); }
+ | expr '*' expr { $$ = opr('*', 2, $1, $3); }
+ | expr '/' expr { $$ = opr('/', 2, $1, $3); }
+ 
+ | '(' expr ')' { $$ = $2; }
+ ;
+ %%
 #define SIZEOF_NODETYPE ((char *)&p->con - (char *)p)
 nodeType *con(int value) {
  nodeType *p;
@@ -54,16 +51,7 @@ nodeType *con(int value) {
  p->con.value = value;
  return p;
 }
-nodeType *id(int i) {
- nodeType *p;
- /* allocate node */
- if ((p = malloc(sizeof(nodeType))) == NULL)
- yyerror("out of memory");
- /* copy information */
- p->type = typeId;
- p->id.i = i;
- return p;
-}
+
 nodeType *opr(int oper, int nops, ...) {
  va_list ap;
  nodeType *p;
@@ -93,25 +81,10 @@ void freeNode(nodeType *p) {
  }
  free (p);
 }
-
-main(argc, argv)	
-	char *argv[];
-{
-	progname = argv[0];
-	yyparse();
+void yyerror(char *s) {
+ fprintf(stdout, "%s\n", s);
 }
-/* yylec() deleted*/
-yyerror(s)	/* called for yacc syntax error */
-	char *s;
-{
-	warning(s, (char *) 0);
-}
-
-warning(s, t)	/* print warning message */
-	char *s, *t;
-{
-	fprintf(stderr, "%s: %s", progname, s);
-	if (t)
-		fprintf(stderr, " %s", t);
-	fprintf(stderr, " near line %d\n", lineno);
-}
+int main(void) {
+ yyparse();
+ return 0;
+} 

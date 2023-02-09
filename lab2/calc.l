@@ -1,32 +1,24 @@
 %{
-#define YYSTYPE double
-#include<stdio.h>
-#include "y.tab.h"
+#include <stdlib.h>
 #include "calc3.h"
-extern int lineno;
+#include "y.tab.h"
+void yyerror(char *);
 %}
-
-
 %%
+
+
 [1-9][0-9]* {
-		yylval=atoi(yytext);
-		return NUMBER;
-
-	}
+ yylval.iValue = atoi(yytext);
+ return INTEGER;
+ }
 [-()<>=+*/;{}.] {
-		 return *yytext;
-	} 
+ return *yytext;
+ }
+[ \n] {return '\n';}
 
-[\t] ;
-
-[\n] {lineno++; return yytext[0];}
-
-. return yytext[0];
-
+[ \t]+ ; /* ignore whitespace */
+. yyerror("Unknown character");
 %%
-
-int yywrap()
-{
-return 1;
-}
-
+int yywrap(void) {
+ return 1;
+} 
