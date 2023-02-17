@@ -19,6 +19,7 @@ void yyerror(char *s);
  nodeType *nPtr; /* node pointer */
 };
 %token <iValue> INTEGER
+%token <sIndex> VARIABLE
 
 %left '+' '-'
 %left '*' '/'
@@ -31,7 +32,7 @@ list:	  /* Parser: Productions */
 	;
 expr:
  INTEGER { $$ = con($1); }
- 
+ | VARIABLE { $$ = id($1); } 
  | expr '+' expr { $$ = opr('+', 2, $1, $3); }
  | expr '-' expr { $$ = opr('-', 2, $1, $3); }
  | expr '*' expr { $$ = opr('*', 2, $1, $3); }
