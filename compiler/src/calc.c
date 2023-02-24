@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "calc3.h"
-#include "y.tab.h"
+#include "../include/calc3.h"
+#include "../bin/y.tab.h"
 static int lbl;
 int ex(nodeType *p) {
 	 int lbl1, lbl2;
