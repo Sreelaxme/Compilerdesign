@@ -5,13 +5,13 @@
 #include "calc3.h"
 /* prototypes */
 nodeType *opr(int oper, int nops, ...);
-nodeType *id(int i);
+
 nodeType *con(int value);
 void freeNode(nodeType *p);
 int ex(nodeType *p);
 int yylex(void);
 void yyerror(char *s);
-int sym[26]; /* symbol table */
+
 %}
 %union {
  int iValue; /* integer value */
