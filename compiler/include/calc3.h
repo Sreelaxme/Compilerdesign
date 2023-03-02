@@ -20,4 +20,13 @@ typedef struct nodeTypeTag {
         oprNodeType opr; /* operators */
     };
 } node;
+struct sym{
+    char* name;
+    int val;
+    int allocated;
+};
+extern struct sym symTab[100];
+int symRead(char*);
+int getVal(int );
+int update(int,int);
 // extern int sym[26]; 

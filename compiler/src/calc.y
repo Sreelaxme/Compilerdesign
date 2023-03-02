@@ -8,6 +8,7 @@ node *opr(int oper, int nops, ...);
 node *con(int value);
 int ex(node *p);
 void freeNode(node *p);
+//struct sym symTab[100];
 %}
 
 %union {
@@ -16,6 +17,7 @@ void freeNode(node *p);
 };
 
 %token <iValue> NUMBER
+%token <iValue> VARIABLE
 %left	'+' '-'	  /* left associative, same precedence */
 %left	'*' '/'	  /* left assoc., higher precedence */
 %type <nPtr> expr
@@ -29,10 +31,11 @@ list:	  /* Parser: Productions */
 	;
 stmt:
 	expr { printf("%d\n",ex($1)); }
-	|
+	| VARIABLE '=' expr {update($1,ex($3));}
 	;
 expr:	
 	NUMBER { $$ = con($1); }
+	|VARIABLE {$$ = con(getVal($1));}
 	| expr '+' expr { $$ = opr('+', 2, $1, $3); }
 	| expr '-' expr { $$ = opr('-', 2, $1, $3); }
 	| expr '*' expr { $$ = opr('*', 2, $1, $3); }

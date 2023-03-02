@@ -5,7 +5,7 @@
 #include "../include/calc3.h"
 #include "../bin/y.tab.h"
 void yyerror(char *);
-
+struct sym symTab[100];
 %}
 
 
@@ -20,7 +20,10 @@ void yyerror(char *);
  return *yytext;
  }
 
-
+[a-z]+ {
+	yylval.iValue = symRead(yytext);
+	return VARIABLE;
+}
 [ \t] ; /* ignore whitespace */
 . yyerror("Unknown character");
 
