@@ -29,4 +29,5 @@ extern struct sym symTab[100];
 int symRead(char*);
 int getVal(int );
 int update(int,int);
+int declare(char*);
 // extern int sym[26]; 

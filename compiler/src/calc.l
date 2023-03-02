@@ -10,6 +10,10 @@ struct sym symTab[100];
 
 
 %%
+"print" {return PRINT;}
+"begindecl" return BEG;
+"enddecl" return END;
+"integer" return INT;
 [0-9]+ {
 		yylval.iValue=atoi(yytext);
 		//printf("%s,%d\n",yytext,yylval);

@@ -29,7 +29,22 @@ int symRead(char* name)
 		if(strcmp(symTab[i].name,newName)==0) return i;
 	}
 	if(i>=100) return -1;
+	
+	
+}
+int declare(char* name)
+{
+	printf("podo");
+    char* newName = malloc(sizeof(char)*strlen(name));
+	strcpy(newName,name);
+	int i;
+	for(i=0;i<100 && symTab[i].allocated;i++)
+	{
+		if(strcmp(symTab[i].name,newName)==0) return i;
+	}
+	if(i>=100) return -1;
 	symTab[i].name = newName;
+	
 	return i;
 }
 int getVal(int index)

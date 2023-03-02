@@ -50,12 +50,20 @@ extern int yydebug;
   enum yytokentype
   {
     NUMBER = 258,
-    VARIABLE = 259
+    VARIABLE = 259,
+    PRINT = 260,
+    BEG = 261,
+    END = 262,
+    INT = 263
   };
 #endif
 /* Tokens.  */
 #define NUMBER 258
 #define VARIABLE 259
+#define PRINT 260
+#define BEG 261
+#define END 262
+#define INT 263
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -66,7 +74,7 @@ union YYSTYPE
 	int iValue;  /* integer value */
 	node *nPtr; /* node pointer */
 
-#line 70 "bin/y.tab.h"
+#line 78 "bin/y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
