@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-static int lbl;
+
 int ex(node *p) {
 	 if (!p) return 0;
 	 switch(p->type) {

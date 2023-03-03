@@ -33,21 +33,21 @@ list:	  /* Parser: Productions */
 	|
 	;
 varList:
-	VARIABLE {$$ = opr(DECLARE, 1, id($1));}
+	VARIABLE  {$$ = opr(DECLARE, 1, id($1));}
 	| varList ',' VARIABLE {$$ = opr(DECLARE, 2, id($3), $1);}
 	|
 	;
 stmt:
 	expr { $$=$1;/*printf("%d\n",ex($1));*/ }
-	| BEG INT varList END { $$=$3;}
-	| VARIABLE '=' expr { if($1==-1)
+	| BEG INT varList ';' END { $$=$3;}
+	| VARIABLE '=' expr ';'{ if($1==-1)
 							{
 							 	printf("error\n");
 								$$=con(0);
 							}
 						else {$$ = opr('=', 2, id($1), $3);}
 						}
-	| PRINT expr  { $$ = opr(PRINT,1,$2);} 
+	| PRINT expr ';' { $$ = opr(PRINT,1,$2);} 
 	
 	;
 expr:	
@@ -78,7 +78,7 @@ node *id(char* var) {
 	return p;
 }
 node *opr(int oper, int nops, ...) {
-	printf("opr\n");
+	//printf("opr\n");
 	va_list ap;
 	node *p;
 	int i;
@@ -93,7 +93,7 @@ node *opr(int oper, int nops, ...) {
 	p->opr.nops = nops;
 	va_start(ap, nops);
 	for (i = 0; i < nops; i++)
-	p->opr.op[i] = va_arg(ap, node*);
+		p->opr.op[i] = va_arg(ap, node*);
 	va_end(ap);
 	
 	return p;
