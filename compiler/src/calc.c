@@ -15,10 +15,10 @@ int ex(node *p) {
 				case '-': return ex(p->opr.op[0]) - ex(p->opr.op[1]);
 				case '*': return ex(p->opr.op[0]) * ex(p->opr.op[1]);
 				case '/': return ex(p->opr.op[0]) / ex(p->opr.op[1]);
-				case '=': return update(ex(p->opr.op[0]) , ex(p->opr.op[1]));
+				case '=': return update((p->opr.op[0]->id.id) , ex(p->opr.op[1]));
 				case PRINT: printf("%d\n", ex(p->opr.op[0]));
  							return 0;
-				case DECLARE:return declare(strr);
+				case DECLARE:return declare(p->opr.op[0]->id.id);
 			}
 	 }
 	 return 0;
@@ -36,7 +36,7 @@ int symRead(char* name)
 	}
 	if(i>=100) return -1;
 	// char* newName = malloc(sizeof(char)*strlen(name));
-	strcpy(strr,name);
+	
 	printf("symRexit\n");
 	
 	return -1;
@@ -60,13 +60,15 @@ int declare(char* name)
 	printf("declend\n");
 	return i;
 }
-int getVal(int index)
+int getVal(char* str)
 {
+	int index = symRead(str);
 	if(!symTab[index].allocated) return 0;
 	return symTab[index].val;
 }
-int update(int index,int value)
+int update(char* str,int value)
 {
+	int index = symRead(str);
 	symTab[index].allocated=1;
 	symTab[index].val=value;
 	return 1;

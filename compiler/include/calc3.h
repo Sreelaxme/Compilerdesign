@@ -1,11 +1,13 @@
-typedef enum { typeCon, typeOpr } nodeEnum;
+typedef enum { typeCon,typeId, typeOpr } nodeEnum;
 
 /* constants */
 typedef struct {
     int value; /* value of constant */
 } conNodeType;
 /* identifiers */
-
+typedef struct {
+    char* id; /* subscript to sym array */
+} idNodeType; 
 /* operators */
 typedef struct {
     int oper; /* operator */
@@ -18,6 +20,7 @@ typedef struct nodeTypeTag {
     union {
         conNodeType con; /* constants */
         oprNodeType opr; /* operators */
+        idNodeType id;
     };
 } node;
 struct sym{
@@ -27,8 +30,8 @@ struct sym{
 };
 extern struct sym symTab[100];
 int symRead(char*);
-int getVal(int );
-int update(int,int);
+int getVal(char *);
+int update(char*,int);
 int declare(char*);
-char strr[100];
+
 // extern int sym[26]; 

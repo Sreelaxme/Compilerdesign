@@ -26,7 +26,7 @@ struct sym symTab[100];
  }
 
 [a-z]+ {
-	yylval.iValue = symRead(yytext);
+	yylval.str = strdup(yytext);
 	return VARIABLE;
 }
 [ \t] ; /* ignore whitespace */

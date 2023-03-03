@@ -6,6 +6,7 @@ int yylex(void);
 void yyerror(char *s);
 node *opr(int oper, int nops, ...);
 node *con(int value);
+node *id(char* var);
 int ex(node *p);
 void freeNode(node *p);
 //struct sym symTab[100];
@@ -13,11 +14,12 @@ void freeNode(node *p);
 
 %union {
 	int iValue;  /* integer value */
+	char* str;
 	node *nPtr; /* node pointer */
 };
 
 %token <iValue> NUMBER
-%token <iValue> VARIABLE
+%token <str> VARIABLE
 %token PRINT BEG END INT DECLARE
 %left	'+' '-'	  /* left associative, same precedence */
 %left	'*' '/'	  /* left assoc., higher precedence */
@@ -30,15 +32,20 @@ list:	  /* Parser: Productions */
 	list stmt '\n'   {ex($2); freeNode($2);}
 	|
 	;
+varList:
+	VARIABLE
+	| varList ',' VARIABLE
+	|
+	;
 stmt:
 	expr { $$=$1;/*printf("%d\n",ex($1));*/ }
-	| BEG INT VARIABLE END { $$=opr(DECLARE,1,con($3));}//declare($3);printf("hehe\n");}
+	| BEG INT VARIABLE END { $$=opr(DECLARE,1,id($3));}//declare($3);printf("hehe\n");}
 	| VARIABLE '=' expr { if($1==-1)
 							{
 							 	printf("error\n");
 								$$=con(0);
 							}
-						else $$ = opr('=', 2, con($1), $3);}
+						else $$ = opr('=', 2, id($1), $3);}
 	| PRINT expr  { $$ = opr(PRINT,1,$2);} 
 	
 	;
@@ -59,6 +66,14 @@ node *con(int value) {
 		yyerror("out of memory");
 	p->type = typeCon; /*type is set*/
 	p->con.value = value; /*type is con and copied value to it*/
+	return p;
+}
+node *id(char* var) {
+	node *p;
+	if ((p = malloc(sizeof(node))) == NULL)
+		yyerror("out of memory");
+	p->type = typeId; /*type is set*/
+	p->id.id = var; /*type is con and copied value to it*/
 	return p;
 }
 node *opr(int oper, int nops, ...) {
