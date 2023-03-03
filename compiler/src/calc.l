@@ -6,6 +6,7 @@
 #include "../bin/y.tab.h"
 void yyerror(char *);
 struct sym symTab[100];
+
 %}
 
 

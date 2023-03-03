@@ -30,4 +30,5 @@ int symRead(char*);
 int getVal(int );
 int update(int,int);
 int declare(char*);
+char strr[100];
 // extern int sym[26]; 

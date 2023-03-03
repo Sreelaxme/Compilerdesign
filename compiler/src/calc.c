@@ -3,6 +3,7 @@
 #include "../bin/y.tab.h"
 #include <string.h>
 #include <stdlib.h>
+
 static int lbl;
 int ex(node *p) {
 	 if (!p) return 0;
@@ -17,6 +18,7 @@ int ex(node *p) {
 				case '=': return update(ex(p->opr.op[0]) , ex(p->opr.op[1]));
 				case PRINT: printf("%d\n", ex(p->opr.op[0]));
  							return 0;
+				case DECLARE:return declare(strr);
 			}
 	 }
 	 return 0;
@@ -33,8 +35,13 @@ int symRead(char* name)
 		if(strcmp(symTab[i].name,newName)==0) return i;
 	}
 	if(i>=100) return -1;
-	declare (newName);
-	return i;
+	// char* newName = malloc(sizeof(char)*strlen(name));
+	strcpy(strr,name);
+	printf("symRexit\n");
+	
+	return -1;
+	// declare (newName);
+	// return i;
 	
 }
 int declare(char* name)
@@ -49,6 +56,7 @@ int declare(char* name)
 	}
 	if(i>=100) return -1;
 	symTab[i].name = newName;
+	symTab[i].allocated=1;
 	printf("declend\n");
 	return i;
 }

@@ -18,7 +18,7 @@ void freeNode(node *p);
 
 %token <iValue> NUMBER
 %token <iValue> VARIABLE
-%token PRINT BEG END INT
+%token PRINT BEG END INT DECLARE
 %left	'+' '-'	  /* left associative, same precedence */
 %left	'*' '/'	  /* left assoc., higher precedence */
 %type <nPtr> expr stmt
@@ -32,8 +32,13 @@ list:	  /* Parser: Productions */
 	;
 stmt:
 	expr { $$=$1;/*printf("%d\n",ex($1));*/ }
-	| BEG INT VARIABLE END { printf("declare");}//declare($3);printf("hehe\n");}
-	| VARIABLE '=' expr { $$ = opr('=', 2, con($1), $3);}
+	| BEG INT VARIABLE END { $$=opr(DECLARE,1,con($3));}//declare($3);printf("hehe\n");}
+	| VARIABLE '=' expr { if($1==-1)
+							{
+							 	printf("error\n");
+								$$=con(0);
+							}
+						else $$ = opr('=', 2, con($1), $3);}
 	| PRINT expr  { $$ = opr(PRINT,1,$2);} 
 	
 	;
