@@ -21,7 +21,7 @@ struct sym symTab[100];
 		return NUMBER;
 
 	}
-[-()<>=+*/;{}.\n] {
+[-()<>=+*/;{}.,\n] {
  return *yytext;
  }
 

@@ -18,7 +18,7 @@ int ex(node *p) {
 				case '=': return update((p->opr.op[0]->id.id) , ex(p->opr.op[1]));
 				case PRINT: printf("%d\n", ex(p->opr.op[0]));
  							return 0;
-				case DECLARE:return declare(p->opr.op[0]->id.id);
+				case DECLARE: declare(p->opr.op[0]->id.id); return ex(p->opr.op[1]);
 			}
 	 }
 	 return 0;

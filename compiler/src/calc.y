@@ -23,7 +23,7 @@ void freeNode(node *p);
 %token PRINT BEG END INT DECLARE
 %left	'+' '-'	  /* left associative, same precedence */
 %left	'*' '/'	  /* left assoc., higher precedence */
-%type <nPtr> expr stmt
+%type <nPtr> expr stmt varList
 %%
 
 
@@ -33,19 +33,20 @@ list:	  /* Parser: Productions */
 	|
 	;
 varList:
-	VARIABLE
-	| varList ',' VARIABLE
+	VARIABLE {$$ = opr(DECLARE, 1, id($1));}
+	| varList ',' VARIABLE {$$ = opr(DECLARE, 2, id($3), $1);}
 	|
 	;
 stmt:
 	expr { $$=$1;/*printf("%d\n",ex($1));*/ }
-	| BEG INT VARIABLE END { $$=opr(DECLARE,1,id($3));}//declare($3);printf("hehe\n");}
+	| BEG INT varList END { $$=$3;}
 	| VARIABLE '=' expr { if($1==-1)
 							{
 							 	printf("error\n");
 								$$=con(0);
 							}
-						else $$ = opr('=', 2, id($1), $3);}
+						else {$$ = opr('=', 2, id($1), $3);}
+						}
 	| PRINT expr  { $$ = opr(PRINT,1,$2);} 
 	
 	;
