@@ -16,7 +16,7 @@ int ex(node *p) {
 				case '*': return ex(p->opr.op[0]) * ex(p->opr.op[1]);
 				case '/': return ex(p->opr.op[0]) / ex(p->opr.op[1]);
 				case '=': return update((p->opr.op[0]->id.id) , ex(p->opr.op[1]));
-				case PRINT: printf("%d\n", ex(p->opr.op[0]));
+				case PRINT: printf("%d\n", ex(p->opr.op[0]));return ex(p->opr.op[1]);
  							return 0;
 				case DECLARE: declare(p->opr.op[0]->id.id); return ex(p->opr.op[1]);
 			}
@@ -26,7 +26,7 @@ int ex(node *p) {
 
 int symRead(char* name)
 {
-	printf("symR\n");
+	//printf("symR\n");
     char* newName = malloc(sizeof(char)*strlen(name));
 	strcpy(newName,name);
 	int i;
@@ -37,7 +37,7 @@ int symRead(char* name)
 	if(i>=100) return -1;
 	// char* newName = malloc(sizeof(char)*strlen(name));
 	
-	printf("symRexit\n");
+	//printf("symRexit\n");
 	
 	return -1;
 	// declare (newName);
@@ -46,7 +46,7 @@ int symRead(char* name)
 }
 int declare(char* name)
 {
-	printf("decl\n");
+	//printf("decl\n");
     char* newName = malloc(sizeof(char)*strlen(name));
 	strcpy(newName,name);
 	int i;
@@ -57,7 +57,7 @@ int declare(char* name)
 	if(i>=100) return -1;
 	symTab[i].name = newName;
 	symTab[i].allocated=1;
-	printf("declend\n");
+	//printf("declend\n");
 	return i;
 }
 int getVal(char* str)

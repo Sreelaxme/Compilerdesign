@@ -23,7 +23,7 @@ void freeNode(node *p);
 %token PRINT BEG END INT DECLARE
 %left	'+' '-'	  /* left associative, same precedence */
 %left	'*' '/'	  /* left assoc., higher precedence */
-%type <nPtr> expr stmt varList
+%type <nPtr> expr stmt varList pList
 %%
 
 
@@ -37,9 +37,15 @@ varList:
 	| varList ',' VARIABLE {$$ = opr(DECLARE, 2, id($3), $1);}
 	|
 	;
+pList :
+	expr {$$ = opr(PRINT, 1, ($1));}
+	| expr ',' pList {$$ = opr(PRINT, 2, $1, $3);}
+	|
+	;
+
 stmt:
 	expr { $$=$1;/*printf("%d\n",ex($1));*/ }
-	| BEG INT varList ';' END { $$=$3;}
+	| BEG '\n' INT varList ';' '\n' END { $$=$4;}
 	| VARIABLE '=' expr ';'{ if($1==-1)
 							{
 							 	printf("error\n");
@@ -47,7 +53,7 @@ stmt:
 							}
 						else {$$ = opr('=', 2, id($1), $3);}
 						}
-	| PRINT expr ';' { $$ = opr(PRINT,1,$2);} 
+	| PRINT pList';' { $$ = $2;} 
 	
 	;
 expr:	
