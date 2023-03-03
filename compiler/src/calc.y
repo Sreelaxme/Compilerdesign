@@ -27,14 +27,14 @@ void freeNode(node *p);
 
 list:	  /* Parser: Productions */
 	
-	list stmt '\n'   
+	list stmt '\n'   {ex($2); freeNode($2);}
 	|
 	;
 stmt:
-	expr { printf("%d\n",ex($1)); }
-	| BEG INT VARIABLE END { printf("%s",$3);}//declare($3);printf("hehe\n");}
-	| VARIABLE '=' expr { update($1,ex($3));}
-	| PRINT expr ';' { printf("%d\n",ex($2)); } 
+	expr { $$=$1;/*printf("%d\n",ex($1));*/ }
+	| BEG INT VARIABLE END { printf("declare");}//declare($3);printf("hehe\n");}
+	| VARIABLE '=' expr { $$ = opr('=', 2, con($1), $3);}
+	| PRINT expr  { $$ = opr(PRINT,1,$2);} 
 	
 	;
 expr:	
@@ -57,6 +57,7 @@ node *con(int value) {
 	return p;
 }
 node *opr(int oper, int nops, ...) {
+	printf("opr\n");
 	va_list ap;
 	node *p;
 	int i;
@@ -73,6 +74,7 @@ node *opr(int oper, int nops, ...) {
 	for (i = 0; i < nops; i++)
 	p->opr.op[i] = va_arg(ap, node*);
 	va_end(ap);
+	
 	return p;
 }
 void freeNode(node *p) {
