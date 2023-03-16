@@ -69,7 +69,7 @@
 		|	func ',' Glist
 		;
 	
-	Gid	:	VAR		{ 				}
+	Gid	:	VAR		{$$ = opr(DECLARE, 1, id($1));}
 		|	Gid '[' NUM ']'	{                                                   }
 
 		;
@@ -164,7 +164,7 @@
 
 		;
 	
-	assign_stmt:	var_expr '=' expr 	{ 						}
+	assign_stmt:	var_expr '=' expr 	{ 			}
 		;
 
 	cond_stmt:	IF expr THEN stmt_list ENDIF 	{ 						}
@@ -196,15 +196,15 @@
 		|	var_expr		{ 			}
 		|	T			{ 						  	}
 		|	F			{ 	}
-		|	'(' expr ')'		{  			}
+		|	'(' expr ')'		{ $$ = $2;}
 
-		|	expr '+' expr 		{ 						}
-		|	expr '-' expr	 	{ 						}
-		|	expr '*' expr 		{ 			}
-		|	expr '/' expr 		{ 					}
-		|	expr '%' expr 		{ 						}
-		|	expr '<' expr		{ 						}
-		|	expr '>' expr		{ 						}
+		|	expr '+' expr 		{ 	$$ = opr('+', 2, $1, $3);}
+		|	expr '-' expr	 	{ $$ = opr('-', 2, $1, $3);	}
+		|	expr '*' expr 		{$$ = opr('*', 2, $1, $3); }
+		|	expr '/' expr 		{  $$ = opr('/', 2, $1, $3);}
+		|	expr '%' expr 		{  $$ = opr('%', 2, $1, $3);}
+		|	expr '<' expr		{  $$ = opr('<', 2, $1, $3);}
+		|	expr '>' expr		{ $$ = opr('>', 2, $1, $3); }
 		|	expr GREATERTHANOREQUAL expr				{ 						}
 		|	expr LESSTHANOREQUAL expr	{  						}
 		|	expr NOTEQUAL expr			{ 						}
