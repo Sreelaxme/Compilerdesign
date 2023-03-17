@@ -17,7 +17,7 @@
 
 %{	
 	#include <stdio.h>
-	#include "AbsSynTree.h"
+	#include "../include/AbsSynTree.h"
 #define YYSTYPE double
 	int yylex();
 	void yyerror( char* );

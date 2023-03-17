@@ -28,36 +28,22 @@ digit	[0-9]
 letter	[a-zA-Z]
 
 %%
-main	                 	{					}	
+main	return MAIN;	
 					
-return 			{
-				}
-begin				{
-					}	
-end			{
-				}	
-read				{
-				}
-write			{
-					}	
-integer			{
-					}	
-boolean				{
-					}	
-decl				{
-				}
-enddecl				{
-				}
-if				{
-				}
-then				{
-					}	
-else				{
-					}	
-endif				{
-				}
-do				{
-				}
+return 			return RETURN ;
+begin				{return BEG;}	
+end			{return END;}	
+read				{return READ;}
+write			{return WRITE ;}	
+integer			{return T_INT;}	
+boolean				{return T_BOOL;}	
+decl				{return DECL;}
+enddecl				{return ENDDECL;	}
+if				{return IF;}
+then				{return THEN ;	}	
+else				{return ELSE ;	}	
+endif				{return ENDIF;}
+do				{return DO;}
 while				{
 			}
 endwhile			{
@@ -83,13 +69,14 @@ true			{
 false			      {
 				}
 
-{digit}+			{ 	
+{digit}+			{yylval.iValue = atoi(yytext);
+				return NUM;
 				}
 
-{letter}({letter}|{digit})*	{ 	
+{letter}({letter}|{digit})*	{yylval.strr = strdup(yytext);
+							return VAR;
 				}
-[-+*/=()><;,\{\}\[\]\%]         {
-				}
+[-+*/=()><;,\{\}\[\]\%]         {return *yytext;	}
 			
 ["]                             { }
 "\\n"                           {
