@@ -16,10 +16,15 @@
  */
 
 %{
-	
+	#include<stdio.h>
+	#include <stdlib.h>
+	#include "../include/compiler.h"
+	#include "../bin/y.tab.h"
+	void yyerror(char *);
+	struct sym symTab[100];
 	#define YYSTYPE NODPTR
-int 	Lineno;
-int     wflag;
+	int 	Lineno;
+	int     wflag;
 
 %}
 

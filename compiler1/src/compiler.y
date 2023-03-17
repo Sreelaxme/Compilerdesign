@@ -18,12 +18,21 @@
 %{	
 	#include <stdio.h>
 	#include "../include/AbsSynTree.h"
-#define YYSTYPE double
+	#define YYSTYPE double
 	int yylex();
 	void yyerror( char* );
-        int i;	
+	int i;
+	node *opr(int oper, int nops, ...);
+	node *con(int value);
+	node *id(char* var);
+	int ex(node *p);
+	void freeNode(node *p);	
 %}
-
+%union {
+	int iValue;  /* integer value */
+	char* str;
+	node *nPtr; /* node pointer */
+};
 %token BEG END
 %token T_INT T_BOOL
 %token READ WRITE
@@ -44,6 +53,8 @@
 %left '%'
 %left LOGICAL_AND LOGICAL_OR
 %left LOGICAL_NOT
+
+%type <nPtr> Gdecl_sec ret_type Gid func arg_type expr 
 %%
 
 	Prog	:	Gdecl_sec Fdef_sec MainBlock

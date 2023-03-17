@@ -15,7 +15,7 @@ int ex(node *p) {
 				case '-': return ex(p->opr.op[0]) - ex(p->opr.op[1]);
 				case '*': return ex(p->opr.op[0]) * ex(p->opr.op[1]);
 				case '/': return ex(p->opr.op[0]) / ex(p->opr.op[1]);
-                case '/': return ex(p->opr.op[0]) % ex(p->opr.op[1]);
+                case '%': return ex(p->opr.op[0]) % ex(p->opr.op[1]);
 				case '=': return update((p->opr.op[0]->id.id) , ex(p->opr.op[1]));
 				//case PRINT: printf("%d\n", ex(p->opr.op[0]));return ex(p->opr.op[1]);
  							return 0;
