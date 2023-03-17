@@ -18,6 +18,10 @@ letter	[a-zA-Z]
 "decl" return DECL;
 "enddecl" return ENDDECL;
 "integer" return INT;
+if				{return IF;}
+then				{return THEN ;	}	
+else				{return ELSE ;	}	
+endif				{return ENDIF;}
 {digit}+ {
 		yylval.iValue=atoi(yytext);
 		//printf("%s,%d\n",yytext,yylval);

@@ -24,6 +24,7 @@ void freeNode(node *p);
 %token IF THEN ELSE ENDIF
 %token EQUALEQUAL LESSTHANOREQUAL GREATERTHANOREQUAL NOTEQUAL
 %token LOGICAL_AND LOGICAL_NOT LOGICAL_OR
+%token IF THEN ELSE ENDIF
 
 %left '<' '>'
 %left EQUALEQUAL LESSTHANOREQUAL GREATERTHANOREQUAL NOTEQUAL
@@ -54,6 +55,8 @@ pList :
 	|
 	;
 
+
+
 stmt:
 	expr { $$=$1;/*printf("%d\n",ex($1));*/ }
 	| DECL '\n' INT varList ';' '\n' ENDDECL { $$=$4;}
@@ -65,7 +68,7 @@ stmt:
 						else {$$ = opr('=', 2, id($1), $3);}
 						}
 	| PRINT pList';' { $$ = $2;} 
-	
+	| IF expr THEN stmt ELSE stmt ENDIF {$$ = opr(IF,3,$2,$4,$6);}
 	;
 expr:	
 	NUMBER { $$ = con($1); }
