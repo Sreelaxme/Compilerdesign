@@ -54,7 +54,9 @@ pList :
 	| expr ',' pList {$$ = opr(PRINT, 2, $1, $3);}
 	|
 	;
-
+stmt_list:	/* NULL */		{ $$ =cons(0) ;}
+		|	stmt stmt_list	{						}
+		|	error ';' 		{printf("error\n") ; $$ = con(0)  ;}
 
 
 stmt:
