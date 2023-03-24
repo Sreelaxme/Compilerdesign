@@ -22,8 +22,13 @@ int ex(node *p) {
 				case PRINT: printf("%d\n", ex(p->opr.op[0]));return ex(p->opr.op[1]);
  							return 0;
 				case IF : if(ex(p->opr.op[0])==1)
-					ex(p->opr.op[1]) ;
-				 		else ex(p->opr.op[2]); 
+							return ex(p->opr.op[1]) ;
+				 		else return ex(p->opr.op[2]); 
+				case WHILE: while(ex(p->opr.op[0])==1)
+							{
+								ex(p->opr.op[1]) ;
+							} 
+				 		return 1; 
 				case DECLARE: declare(p->opr.op[0]->id.id); return ex(p->opr.op[1]);
 				case GREATERTHANOREQUAL : return ex(p->opr.op[0]) >= ex(p->opr.op[1]);
 				case LESSTHANOREQUAL : return ex(p->opr.op[0]) <= ex(p->opr.op[1]);

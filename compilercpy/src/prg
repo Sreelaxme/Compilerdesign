@@ -1,0 +1,3 @@
+main() { decl
+integer x ;
+enddecl x = 3 ; while x > 0 do print x ; endwhile ; } main () 

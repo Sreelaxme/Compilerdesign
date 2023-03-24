@@ -22,6 +22,9 @@ if				{return IF;}
 then				{return THEN ;	}	
 else				{return ELSE ;	}	
 endif				{return ENDIF;}
+do				{return DO;}
+while 			{return WHILE;}
+endwhile 		{ return ENDWHILE ;}
 {digit}+ {
 		yylval.iValue=atoi(yytext);
 		//printf("%s,%d\n",yytext,yylval);

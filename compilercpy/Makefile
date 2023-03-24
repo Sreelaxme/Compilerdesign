@@ -13,5 +13,6 @@ bin/y.tab.c : src/calc.y
 
 clean :
 	rm -rf bin
-
+test : dir calculator
+	./bin/calc.out < src/prg
  

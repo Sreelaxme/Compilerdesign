@@ -25,6 +25,7 @@ int updateFunStat(char* str,node* ptr);
 %token <str> VARIABLE
 %token PRINT DECL ENDDECL INT DECLARE STMNT
 %token IF THEN ELSE ENDIF
+%token DO WHILE ENDWHILE
 %token EQUALEQUAL LESSTHANOREQUAL GREATERTHANOREQUAL NOTEQUAL
 %token LOGICAL_AND LOGICAL_NOT LOGICAL_OR
 
@@ -70,23 +71,19 @@ pList :
 	|
 	;
 stmt_list:	/* NULL */		{ $$ =con(0) ;}
-		|	stmt stmt_list	{STMNT , 2, $1 ,$2 ;}
-		
+		|	stmt stmt_list	{$$ = opr(STMNT , 2, $1 ,$2) ;}
+		| 	stmt {$$ = $1 ;}
 		|	error ';' 		{printf("error\n") ; $$ = con(0)  ;}
 
 
 stmt:
-	expr { $$=$1;/*printf("%d\n",ex($1));*/ }
+	expr ';' { $$=$1;/*printf("%d\n",ex($1));*/ }
 	| DECL '\n' INT varList ';' '\n' ENDDECL { $$=$4;}
-	| VARIABLE '=' expr ';'{ if($1==-1)
-							{
-							 	printf("error\n");
-								$$=con(0);
-							}
-						else {$$ = opr('=', 2, id($1), $3);}
-						}
+	| VARIABLE '=' expr ';'{$$ = opr('=', 2, id($1), $3);}
+						
 	| PRINT pList';' { $$ = $2;} 
-	| IF expr THEN stmt ELSE stmt ENDIF {$$ = opr(IF,3,$2,$4,$6);}
+	| IF expr THEN stmt_list ELSE stmt_list ENDIF { printf("ifelse il keri\n") ; $$ = opr(IF,3,$2,$4,$6);}
+	| WHILE expr DO stmt_list ENDWHILE ';' { printf("while il keri \n"); $$ = opr(WHILE,2,$2,$4);}
 	;
 expr:	
 	NUMBER { $$ = con($1); }
