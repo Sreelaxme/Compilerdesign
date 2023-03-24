@@ -3,3 +3,4 @@
 - 3/03/2023 Done with assignment-2
 - 16/03/2023 Tried implementing basic calculator on the compiler file given
 - 17/03/2023  implemented logical operators on the previous assignment in folder compilercpy
+- 24/03/2023 implemented function call and function declaration without arguments
