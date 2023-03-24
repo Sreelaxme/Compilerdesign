@@ -24,12 +24,22 @@ int ex(node *p) {
 				case IF : if(ex(p->opr.op[0])==1)
 							return ex(p->opr.op[1]) ;
 				 		else return ex(p->opr.op[2]); 
-				case WHILE: while(ex(p->opr.op[0])==1)
-							{
+				case WHILE: {
+					printf("c file il ah njn epo\n");
+						while(ex(p->opr.op[0])==1)
+						{
 								ex(p->opr.op[1]) ;
-							} 
+						}
+						printf("while work ayilla \n"); 
 				 		return 1; 
-				case DECLARE: declare(p->opr.op[0]->id.id); return ex(p->opr.op[1]);
+
+				}
+							
+				case DECLARE:
+							{
+								printf("declare ayit tto\n");
+								declare(p->opr.op[0]->id.id); return ex(p->opr.op[1]);
+							} 
 				case GREATERTHANOREQUAL : return ex(p->opr.op[0]) >= ex(p->opr.op[1]);
 				case LESSTHANOREQUAL : return ex(p->opr.op[0]) <= ex(p->opr.op[1]);
 				case NOTEQUAL : return ex(p->opr.op[0]) != ex(p->opr.op[1]);
