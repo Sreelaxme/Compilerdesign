@@ -9,6 +9,9 @@ node *con(int value);
 node *id(char* var);
 int ex(node *p);
 void freeNode(node *p);
+int declareFn(char* name, node* ptr);
+node* getFn(char* str);
+int updateFunStat(char* str,node* ptr);
 //struct sym symTab[100];
 %}
 
@@ -20,11 +23,11 @@ void freeNode(node *p);
 
 %token <iValue> NUMBER
 %token <str> VARIABLE
-%token PRINT DECL ENDDECL INT DECLARE
+%token PRINT DECL ENDDECL INT DECLARE STMNT
 %token IF THEN ELSE ENDIF
 %token EQUALEQUAL LESSTHANOREQUAL GREATERTHANOREQUAL NOTEQUAL
 %token LOGICAL_AND LOGICAL_NOT LOGICAL_OR
-%token IF THEN ELSE ENDIF
+
 
 %left '<' '>'
 %left EQUALEQUAL LESSTHANOREQUAL GREATERTHANOREQUAL NOTEQUAL
@@ -35,14 +38,26 @@ void freeNode(node *p);
 %left LOGICAL_NOT
 
 
-%type <nPtr> expr stmt varList pList
+%type <nPtr> expr stmt varList pList Fdef stmt_list
 %%
 
 
-list:	  /* Parser: Productions */
+// list:	  /* Parser: Productions */
 	
-	list stmt '\n'   {ex($2); freeNode($2);}
+// 	list stmt '\n'   {ex($2); freeNode($2);}
+// 	|
+// 	;
+program :
+	program func_call '\n'
+	| program Fdef
 	|
+	;
+func_call :
+	 VARIABLE '(' ')' {node * n = getFn($1);ex(n);}
+	|
+	;
+Fdef:
+	VARIABLE '('  ')' '{' stmt_list '}'	{ declareFn($1,$5);	}
 	;
 varList:
 	VARIABLE  {$$ = opr(DECLARE, 1, id($1));}
@@ -54,8 +69,9 @@ pList :
 	| expr ',' pList {$$ = opr(PRINT, 2, $1, $3);}
 	|
 	;
-stmt_list:	/* NULL */		{ $$ =cons(0) ;}
-		|	stmt stmt_list	{						}
+stmt_list:	/* NULL */		{ $$ =con(0) ;}
+		|	stmt stmt_list	{STMNT , 2, $1 ,$2 ;}
+		
 		|	error ';' 		{printf("error\n") ; $$ = con(0)  ;}
 
 

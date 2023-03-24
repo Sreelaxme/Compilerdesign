@@ -1,5 +1,5 @@
 typedef enum { typeCon,typeId, typeOpr } nodeEnum;
-
+typedef enum {typeInt, typeNode, unallocated} symTabEnum;
 /* constants */
 typedef struct {
     int value; /* value of constant */
@@ -25,8 +25,12 @@ typedef struct nodeTypeTag {
 } node;
 struct sym{
     char* name;
-    int val;
     int allocated;
+    symTabEnum  type;
+    union{
+        int val;
+        node* nodeptr; 
+    };
 };
 extern struct sym symTab[100];
 int symRead(char*);
