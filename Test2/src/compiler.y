@@ -40,7 +40,7 @@ int updateFunStat(char* str,node* ptr);
 %left LOGICAL_NOT
 
 
-%type <nPtr> expr stmt varList pList Fdef stmt_list decl_stmt 
+%type <nPtr> expr stmt varList pList Fdef stmt_list decl_stmt main
 %%
 
 
@@ -55,18 +55,21 @@ int updateFunStat(char* str,node* ptr);
 // 	| main endl { ex($1);}
 // 	|
 // 	;
-// main:
-// 	INT MAIN '(' ')' '{' endl Begin stmt_list endl End endl '}' { printf("found main\n"); $$ = $8;}
+
 program:
-	|program func_call endl
-	|program INT Fdef endl
-	|program decl_stmt endl
+	|program Fdef endl 
+	|program decl_stmt endl {ex($2);}
+	|program main endl {ex($2);}
+	;
+main:
+	INT MAIN '(' ')' '{' endl Begin endl stmt_list endl End endl '}' { printf("found main\n"); $$ = $9;}
 	;
 endl:
 	|endl '\n'
 	;
+
 func_call:
-	 VARIABLE '(' ')' {node * n = getFn($1);ex(n);}
+	 VARIABLE '(' ')' ';' {node * n = getFn($1);ex(n);}
 	|
 	;
 Fdef:
@@ -81,8 +84,8 @@ pList:
 	| expr ',' pList {$$ = opr(PRINT_List, 2, opr(PRINT,1,id($1)), $3);}
 	;
 stmt_list:	/* NULL */		{ $$ =con(0) ;}
-		| 	stmt {$$ = $1 ;}
-		|	stmt stmt_list	{$$ = opr(STMNT , 2, $1 ,$2) ;}
+		| 	stmt endl {$$ = $1 ;}
+		|	stmt stmt_list	endl{$$ = opr(STMNT , 2, $1 ,$2) ;}
 		
 		|	error ';' 		{printf("error\n") ; $$ = con(0)  ;}
 
@@ -91,7 +94,7 @@ decl_stmt:
 	;
 stmt:
 	expr ';' { $$=$1;/*printf("%d\n",ex($1));*/ }
-| decl_stmt {$$ = $1;}
+	| decl_stmt {$$ = $1;}
 	| VARIABLE '=' expr ';'{/*printf("variable assignment\n");*/$$ = opr('=', 2, id($1), $3);}
 						
 	| PRINT pList';' { /*printf("trying to print\n");*/ $$ = $2;} 
