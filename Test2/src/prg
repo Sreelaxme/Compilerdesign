@@ -1,0 +1,5 @@
+hello() { decl
+integer x ;
+enddecl ;x =2 ; print x ;}
+hello()
+

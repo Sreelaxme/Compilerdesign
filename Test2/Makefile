@@ -15,4 +15,5 @@ clean :
 	rm -rf bin
 test : dir calculator
 	./bin/calc.out < src/1
- 
+test2: dir calculator
+	./bin/calc.out < src/prg
