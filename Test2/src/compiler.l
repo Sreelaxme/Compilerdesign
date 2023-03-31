@@ -25,9 +25,10 @@ endif				{return ENDIF;}
 do				{return DO;}
 while 			{return WHILE;}
 endwhile 		{ return ENDWHILE ;}
+begin {return Begin;}
+end {return End;}
 write {return PRINT;} 
-begin {return BEGIN ;}
-end {return END ;}
+main {return MAIN ;}
 {digit}+ {
 		yylval.iValue=atoi(yytext);
 		//printf("%s,%d\n",yytext,yylval);
@@ -65,6 +66,6 @@ return 1;
 
 
 
-// } 
+
 
 

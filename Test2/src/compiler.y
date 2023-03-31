@@ -23,7 +23,8 @@ int updateFunStat(char* str,node* ptr);
 
 %token <iValue> NUMBER
 %token <str> VARIABLE
-%token PRINT DECL ENDDECL INT DECLARE STMNT DECLARE_List PRINT_List BEGIN END
+%token PRINT DECL ENDDECL INT DECLARE STMNT DECLARE_List PRINT_List Begin End
+%token MAIN 
 %token IF THEN ELSE ENDIF
 %token DO WHILE ENDWHILE
 %token EQUALEQUAL LESSTHANOREQUAL GREATERTHANOREQUAL NOTEQUAL
@@ -39,7 +40,7 @@ int updateFunStat(char* str,node* ptr);
 %left LOGICAL_NOT
 
 
-%type <nPtr> expr stmt varList pList Fdef stmt_list decl_stmt
+%type <nPtr> expr stmt varList pList Fdef stmt_list decl_stmt 
 %%
 
 
@@ -48,27 +49,36 @@ int updateFunStat(char* str,node* ptr);
 // 	list stmt '\n'   {ex($2); freeNode($2);}
 // 	|
 // 	;
+// block:
+// 	| decl_stmt endl{ ex($1); }
+// 	| Fdef endl
+// 	| main endl { ex($1);}
+// 	|
+// 	;
+// main:
+// 	INT MAIN '(' ')' '{' endl Begin stmt_list endl End endl '}' { printf("found main\n"); $$ = $8;}
 program:
-	|program func_call '\n'
-	| program Fdef '\n'
-	|program decl_stmt '\n'
+	|program func_call endl
+	|program INT Fdef endl
+	|program decl_stmt endl
+	;
+endl:
+	|endl '\n'
 	;
 func_call:
 	 VARIABLE '(' ')' {node * n = getFn($1);ex(n);}
 	|
 	;
 Fdef:
-	VARIABLE '('  ')' '{' BEGIN stmt_list  END '}'	{ /*printf("fdef\n");*/$$ = declareFn($1,$6);	}
+	VARIABLE '('  ')' '{' endl Begin endl stmt_list endl End endl '}'	{ /*printf("fdef\n");*/$$ = declareFn($1,$8);	}
 	;
 varList:
 	VARIABLE  {/*printf("1 in varList\n");*/$$ = opr(DECLARE, 1, id($1));}
 	| varList ',' VARIABLE {printf("2 in VarList\n");$$ = opr(DECLARE_List, 2, opr(DECLARE,1,id($1)), $3);}
-	|
 	;
 pList:
 	expr {$$ = opr(PRINT, 1, ($1));}
 	| expr ',' pList {$$ = opr(PRINT_List, 2, opr(PRINT,1,id($1)), $3);}
-	|
 	;
 stmt_list:	/* NULL */		{ $$ =con(0) ;}
 		| 	stmt {$$ = $1 ;}
@@ -76,8 +86,8 @@ stmt_list:	/* NULL */		{ $$ =con(0) ;}
 		
 		|	error ';' 		{printf("error\n") ; $$ = con(0)  ;}
 
-decl_stmt : 
-	|DECL '\n' INT varList ';' '\n' ENDDECL ';'{/*printf("declaration in .y \n");*/ $$=$4;}
+decl_stmt:
+	|DECL endl INT varList ';' endl ENDDECL  {printf("Global declaration \n"); $$=$4;}
 	;
 stmt:
 	expr ';' { $$=$1;/*printf("%d\n",ex($1));*/ }
@@ -85,8 +95,8 @@ stmt:
 	| VARIABLE '=' expr ';'{/*printf("variable assignment\n");*/$$ = opr('=', 2, id($1), $3);}
 						
 	| PRINT pList';' { /*printf("trying to print\n");*/ $$ = $2;} 
-	| IF expr THEN stmt_list ELSE stmt_list ENDIF { printf("ifelse il keri\n") ; $$ = opr(IF,3,$2,$4,$6);}
-	| WHILE expr DO stmt_list ENDWHILE ';' { printf("while il keri \n"); $$ = opr(WHILE,2,$2,$4);}
+	| IF expr THEN endl stmt_list endl ELSE endl stmt_list endl ENDIF ';' { printf("ifelse il keri\n") ; $$ = opr(IF,3,$2,$5,$9);}
+	| WHILE expr DO endl stmt_list endl ENDWHILE ';' { printf("while il keri \n"); $$ = opr(WHILE,2,$2,$5);}
 	;
 expr:	
 	NUMBER { $$ = con($1); }

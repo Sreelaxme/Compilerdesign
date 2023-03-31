@@ -1,6 +1,11 @@
 decl
 integer x ;
-enddecl ;
-hello() { begin  x =2 ; while (x>0) do write x ; x = x-1; endwhile ; end }
+enddecl 
+integer hello() { 
+begin
+x =2 ; while (x>0) do 
+write x ; x = x-1; 
+endwhile ; 
+end 
+}
 hello()
-
