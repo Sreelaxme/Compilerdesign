@@ -8,7 +8,7 @@
 int ex(node *p) {
 	 if (!p) return 0;
 	 switch(p->type) {
-		 case typeCon:return p->con.value;
+		 case typeCon: printf("cons\n",p->con.value);return p->con.value;
 		 case typeOpr:
 			switch(p->opr.oper) {
 				case '+': return ex(p->opr.op[0]) + ex(p->opr.op[1]);
@@ -20,7 +20,7 @@ int ex(node *p) {
 				case '<': return ex(p->opr.op[0]) < ex(p->opr.op[1]);
 				case '=': 
 				{
-					printf("Case = il aanu,%d,%d " p->opr.op[0]->id.id,ex(p->opr.op[1]));
+					printf("Case = il aanu,%s,%d \n" ,p->opr.op[0]->id.id,ex(p->opr.op[1]));
 					return update((p->opr.op[0]->id.id) , ex(p->opr.op[1]));
 				}
 				case PRINT: printf("%d\n", ex(p->opr.op[0]));return ex(p->opr.op[1]);
@@ -41,7 +41,12 @@ int ex(node *p) {
 							
 				case DECLARE:
 							{
-								printf("declare ayit tto\n");
+								
+								declare(p->opr.op[0]->id.id); return 0;
+							} 
+				case DECLARE_List:
+							{
+								
 								declare(p->opr.op[0]->id.id); return ex(p->opr.op[1]);
 							} 
 				case GREATERTHANOREQUAL : return ex(p->opr.op[0]) >= ex(p->opr.op[1]);
@@ -92,7 +97,7 @@ int declare(char* name)
 	symTab[i].name = newName;
 	symTab[i].allocated=1;
 	symTab[i].type = typeInt ;
-	//printf("declend\n");
+	printf("declared\n");
 	return i;
 }
 int updateFunStat(char* str,node* ptr)
@@ -135,5 +140,6 @@ int update(char* str,int value)
 	int index = symRead(str);
 	symTab[index].allocated=1;
 	symTab[index].val=value;
+	printf("update done ...so variable assigned correctly\n");
 	return 1;
 }

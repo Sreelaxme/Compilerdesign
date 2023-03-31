@@ -1,3 +1,5 @@
-main() { decl
+hello() { decl
 integer x ;
-enddecl print 2 ; } main () 
+enddecl ;x =2 ; print x ;}
+hello()
+

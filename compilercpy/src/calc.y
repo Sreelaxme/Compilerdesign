@@ -23,7 +23,7 @@ int updateFunStat(char* str,node* ptr);
 
 %token <iValue> NUMBER
 %token <str> VARIABLE
-%token PRINT DECL ENDDECL INT DECLARE STMNT
+%token PRINT DECL ENDDECL INT DECLARE STMNT DECLARE_List
 %token IF THEN ELSE ENDIF
 %token DO WHILE ENDWHILE
 %token EQUALEQUAL LESSTHANOREQUAL GREATERTHANOREQUAL NOTEQUAL
@@ -48,40 +48,41 @@ int updateFunStat(char* str,node* ptr);
 // 	list stmt '\n'   {ex($2); freeNode($2);}
 // 	|
 // 	;
-program :
-	program func_call '\n'
-	| program Fdef
+program:
+	|program func_call '\n'
+	| program Fdef '\n'
 	|
 	;
-func_call :
+func_call:
 	 VARIABLE '(' ')' {node * n = getFn($1);ex(n);}
 	|
 	;
 Fdef:
-	VARIABLE '('  ')' '{' stmt_list '}'	{ declareFn($1,$5);	}
+	VARIABLE '('  ')' '{'  stmt_list  '}'	{ declareFn($1,$5);	}
 	;
 varList:
-	VARIABLE  {$$ = opr(DECLARE, 1, id($1));}
-	| varList ',' VARIABLE {$$ = opr(DECLARE, 2, id($3), $1);}
+	VARIABLE  {printf("1 in varList\n");$$ = opr(DECLARE, 1, id($1));}
+	| varList ',' VARIABLE {printf("2 in VarList\n");$$ = opr(DECLARE_List, 2, id($3), $1);}
 	|
 	;
-pList :
+pList:
 	expr {$$ = opr(PRINT, 1, ($1));}
 	| expr ',' pList {$$ = opr(PRINT, 2, $1, $3);}
 	|
 	;
 stmt_list:	/* NULL */		{ $$ =con(0) ;}
-		|	stmt stmt_list	{$$ = opr(STMNT , 2, $1 ,$2) ;}
 		| 	stmt {$$ = $1 ;}
+		|	stmt stmt_list	{$$ = opr(STMNT , 2, $1 ,$2) ;}
+		
 		|	error ';' 		{printf("error\n") ; $$ = con(0)  ;}
 
 
 stmt:
 	expr ';' { $$=$1;/*printf("%d\n",ex($1));*/ }
-	| DECL '\n' INT varList ';' '\n' ENDDECL { $$=$4;}
+	| DECL '\n' INT varList ';' '\n' ENDDECL ';'{printf("declaration in .y \n"); $$=$4;}
 	| VARIABLE '=' expr ';'{printf("variable assignment\n");$$ = opr('=', 2, id($1), $3);}
 						
-	| PRINT pList';' { $$ = $2;} 
+	| PRINT pList';' { printf("trying to print\n");$$ = $2;} 
 	| IF expr THEN stmt_list ELSE stmt_list ENDIF { printf("ifelse il keri\n") ; $$ = opr(IF,3,$2,$4,$6);}
 	| WHILE expr DO stmt_list ENDWHILE ';' { printf("while il keri \n"); $$ = opr(WHILE,2,$2,$4);}
 	;
