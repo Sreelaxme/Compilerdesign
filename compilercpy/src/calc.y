@@ -79,7 +79,7 @@ stmt_list:	/* NULL */		{ $$ =con(0) ;}
 stmt:
 	expr ';' { $$=$1;/*printf("%d\n",ex($1));*/ }
 	| DECL '\n' INT varList ';' '\n' ENDDECL { $$=$4;}
-	| VARIABLE '=' expr ';'{$$ = opr('=', 2, id($1), $3);}
+	| VARIABLE '=' expr ';'{printf("variable assignment\n");$$ = opr('=', 2, id($1), $3);}
 						
 	| PRINT pList';' { $$ = $2;} 
 	| IF expr THEN stmt_list ELSE stmt_list ENDIF { printf("ifelse il keri\n") ; $$ = opr(IF,3,$2,$4,$6);}

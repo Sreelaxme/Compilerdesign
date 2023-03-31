@@ -18,7 +18,11 @@ int ex(node *p) {
 				case '%': return ex(p->opr.op[0]) % ex(p->opr.op[1]);
 				case '>': return ex(p->opr.op[0]) > ex(p->opr.op[1]);
 				case '<': return ex(p->opr.op[0]) < ex(p->opr.op[1]);
-				case '=': return update((p->opr.op[0]->id.id) , ex(p->opr.op[1]));
+				case '=': 
+				{
+					printf("Case = il aanu,%d,%d " p->opr.op[0]->id.id,ex(p->opr.op[1]));
+					return update((p->opr.op[0]->id.id) , ex(p->opr.op[1]));
+				}
 				case PRINT: printf("%d\n", ex(p->opr.op[0]));return ex(p->opr.op[1]);
  							return 0;
 				case IF : if(ex(p->opr.op[0])==1)
