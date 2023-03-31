@@ -1371,13 +1371,13 @@ yyreduce:
 
   case 8:
 #line 61 "src/compiler.y" /* yacc.c:1646  */
-    { printf("fdef\n");(yyval.nPtr) = declareFn((yyvsp[-5].str),(yyvsp[-1].nPtr));	}
+    { /*printf("fdef\n");*/(yyval.nPtr) = declareFn((yyvsp[-5].str),(yyvsp[-1].nPtr));	}
 #line 1376 "bin/y.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
 #line 64 "src/compiler.y" /* yacc.c:1646  */
-    {printf("1 in varList\n");(yyval.nPtr) = opr(DECLARE, 1, id((yyvsp[0].str)));}
+    {/*printf("1 in varList\n");*/(yyval.nPtr) = opr(DECLARE, 1, id((yyvsp[0].str)));}
 #line 1382 "bin/y.tab.c" /* yacc.c:1646  */
     break;
 
@@ -1431,19 +1431,19 @@ yyreduce:
 
   case 20:
 #line 82 "src/compiler.y" /* yacc.c:1646  */
-    {printf("declaration in .y \n"); (yyval.nPtr)=(yyvsp[-4].nPtr);}
+    {/*printf("declaration in .y \n");*/ (yyval.nPtr)=(yyvsp[-4].nPtr);}
 #line 1436 "bin/y.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
 #line 83 "src/compiler.y" /* yacc.c:1646  */
-    {printf("variable assignment\n");(yyval.nPtr) = opr('=', 2, id((yyvsp[-3].str)), (yyvsp[-1].nPtr));}
+    {/*printf("variable assignment\n");*/(yyval.nPtr) = opr('=', 2, id((yyvsp[-3].str)), (yyvsp[-1].nPtr));}
 #line 1442 "bin/y.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
 #line 85 "src/compiler.y" /* yacc.c:1646  */
-    { printf("trying to print\n");(yyval.nPtr) = (yyvsp[-1].nPtr);}
+    { /*printf("trying to print\n");*/ (yyval.nPtr) = (yyvsp[-1].nPtr);}
 #line 1448 "bin/y.tab.c" /* yacc.c:1646  */
     break;
 

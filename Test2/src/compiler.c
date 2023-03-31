@@ -21,7 +21,7 @@ int ex(node *p) {
 				case '<': return ex(p->opr.op[0]) < ex(p->opr.op[1]);
 				case '=': 
 				{
-					printf("Case = il aanu,%s,%d \n" ,p->opr.op[0]->id.id,ex(p->opr.op[1]));
+					//printf("Case = il aanu,%s,%d \n" ,p->opr.op[0]->id.id,ex(p->opr.op[1]));
 					return update((p->opr.op[0]->id.id) , ex(p->opr.op[1]));
 				}
 				case PRINT: printf("%d\n", ex(p->opr.op[0])); return 0 ;
@@ -31,12 +31,13 @@ int ex(node *p) {
 							return ex(p->opr.op[1]) ;
 				 		else return ex(p->opr.op[2]); 
 				case WHILE: {
-					printf("c file il ah njn epo\n");
+					//printf("c file il ah njn epo\n");
 						while(ex(p->opr.op[0])==1)
 						{
+
 								ex(p->opr.op[1]) ;
 						}
-						printf("while work ayilla \n"); 
+						//printf("while work ayilla \n"); 
 				 		return 1; 
 
 				}
@@ -99,7 +100,7 @@ int declare(char* name)
 	symTab[i].name = newName;
 	symTab[i].allocated=1;
 	symTab[i].type = typeInt ;
-	printf("declared\n");
+	//printf("declared\n");
 	return i;
 }
 int updateFunStat(char* str,node* ptr)
@@ -130,10 +131,10 @@ int getVal(char* str)
 	int index = symRead(str);
 	if(!symTab[index].allocated)
 	{
-		printf("Something wong...im returning from getVal\n");
+		//printf("Something wong...im returning from getVal\n");
 		return 0;
 	} 
-	printf("Im in getVal and returning %d\n",symTab[index].val);
+	//printf("Im in getVal and returning %d\n",symTab[index].val);
 	return symTab[index].val;
 }
 node* getFn(char* str)
@@ -147,6 +148,6 @@ int update(char* str,int value)
 	int index = symRead(str);
 	symTab[index].allocated=1;
 	symTab[index].val=value;
-	printf("update done ...so variable assigned correctly to %d \n",symTab[index].val);
+	//printf("update done ...so variable assigned correctly to %d \n",symTab[index].val);
 	return 1;
 }
