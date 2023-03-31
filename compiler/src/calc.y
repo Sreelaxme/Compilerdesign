@@ -37,7 +37,7 @@ varList:
 	| varList ',' VARIABLE {$$ = opr(DECLARE, 2, id($3), $1);}
 	|
 	;
-pList :
+pList:
 	expr {$$ = opr(PRINT, 1, ($1));}
 	| expr ',' pList {$$ = opr(PRINT, 2, $1, $3);}
 	|
