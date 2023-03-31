@@ -23,7 +23,7 @@ int updateFunStat(char* str,node* ptr);
 
 %token <iValue> NUMBER
 %token <str> VARIABLE
-%token PRINT DECL ENDDECL INT DECLARE STMNT DECLARE_List PRINT_List
+%token PRINT DECL ENDDECL INT DECLARE STMNT DECLARE_List PRINT_List BEGIN END
 %token IF THEN ELSE ENDIF
 %token DO WHILE ENDWHILE
 %token EQUALEQUAL LESSTHANOREQUAL GREATERTHANOREQUAL NOTEQUAL
@@ -39,7 +39,7 @@ int updateFunStat(char* str,node* ptr);
 %left LOGICAL_NOT
 
 
-%type <nPtr> expr stmt varList pList Fdef stmt_list
+%type <nPtr> expr stmt varList pList Fdef stmt_list decl_stmt
 %%
 
 
@@ -51,14 +51,14 @@ int updateFunStat(char* str,node* ptr);
 program:
 	|program func_call '\n'
 	| program Fdef '\n'
-	|
+	|program decl_stmt '\n'
 	;
 func_call:
 	 VARIABLE '(' ')' {node * n = getFn($1);ex(n);}
 	|
 	;
 Fdef:
-	VARIABLE '('  ')' '{'  stmt_list  '}'	{ /*printf("fdef\n");*/$$ = declareFn($1,$5);	}
+	VARIABLE '('  ')' '{' BEGIN stmt_list  END '}'	{ /*printf("fdef\n");*/$$ = declareFn($1,$6);	}
 	;
 varList:
 	VARIABLE  {/*printf("1 in varList\n");*/$$ = opr(DECLARE, 1, id($1));}
@@ -76,10 +76,12 @@ stmt_list:	/* NULL */		{ $$ =con(0) ;}
 		
 		|	error ';' 		{printf("error\n") ; $$ = con(0)  ;}
 
-
+decl_stmt : 
+	|DECL '\n' INT varList ';' '\n' ENDDECL ';'{/*printf("declaration in .y \n");*/ $$=$4;}
+	;
 stmt:
 	expr ';' { $$=$1;/*printf("%d\n",ex($1));*/ }
-	| DECL '\n' INT varList ';' '\n' ENDDECL ';'{/*printf("declaration in .y \n");*/ $$=$4;}
+| decl_stmt {$$ = $1;}
 	| VARIABLE '=' expr ';'{/*printf("variable assignment\n");*/$$ = opr('=', 2, id($1), $3);}
 						
 	| PRINT pList';' { /*printf("trying to print\n");*/ $$ = $2;} 
