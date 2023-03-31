@@ -8,7 +8,8 @@
 int ex(node *p) {
 	 if (!p) return 0;
 	 switch(p->type) {
-		 case typeCon: printf("cons\n",p->con.value);return p->con.value;
+		 case typeCon: /*printf("cons\n",p->con.value);*/return p->con.value;
+		 case typeId: return getVal(p->id.id);
 		 case typeOpr:
 			switch(p->opr.oper) {
 				case '+': return ex(p->opr.op[0]) + ex(p->opr.op[1]);
@@ -23,8 +24,9 @@ int ex(node *p) {
 					printf("Case = il aanu,%s,%d \n" ,p->opr.op[0]->id.id,ex(p->opr.op[1]));
 					return update((p->opr.op[0]->id.id) , ex(p->opr.op[1]));
 				}
-				case PRINT: printf("%d\n", ex(p->opr.op[0]));return ex(p->opr.op[1]);
- 							return 0;
+				case PRINT: printf("%d\n", ex(p->opr.op[0])); return 0 ;
+				case PRINT_List: printf("%d\n", ex(p->opr.op[0]));ex(p->opr.op[1]) ;return 0;
+ 							
 				case IF : if(ex(p->opr.op[0])==1)
 							return ex(p->opr.op[1]) ;
 				 		else return ex(p->opr.op[2]); 
@@ -56,7 +58,7 @@ int ex(node *p) {
 				case LOGICAL_NOT : return !(ex(p->opr.op[0]));
 				case LOGICAL_AND : return ex(p->opr.op[0]) && ex(p->opr.op[1]);
 				case LOGICAL_OR : return ex(p->opr.op[0]) || ex(p->opr.op[1]);
-				case STMNT : ex(p->opr.op[0]);return ex(p->opr.op[1]);
+				case STMNT : ex(p->opr.op[0]);ex(p->opr.op[1]) ;return 0;
 			}
 	 }
 	 return 0;
@@ -126,7 +128,12 @@ int declareFn(char* name, node* ptr)
 int getVal(char* str)
 {
 	int index = symRead(str);
-	if(!symTab[index].allocated) return 0;
+	if(!symTab[index].allocated)
+	{
+		printf("Something wong...im returning from getVal\n");
+		return 0;
+	} 
+	printf("Im in getVal and returning %d\n",symTab[index].val);
 	return symTab[index].val;
 }
 node* getFn(char* str)
@@ -140,6 +147,6 @@ int update(char* str,int value)
 	int index = symRead(str);
 	symTab[index].allocated=1;
 	symTab[index].val=value;
-	printf("update done ...so variable assigned correctly\n");
+	printf("update done ...so variable assigned correctly to %d \n",symTab[index].val);
 	return 1;
 }

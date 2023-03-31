@@ -23,12 +23,12 @@ int updateFunStat(char* str,node* ptr);
 
 %token <iValue> NUMBER
 %token <str> VARIABLE
-%token PRINT DECL ENDDECL INT DECLARE STMNT DECLARE_List
+%token PRINT DECL ENDDECL INT DECLARE STMNT DECLARE_List PRINT_List
 %token IF THEN ELSE ENDIF
 %token DO WHILE ENDWHILE
 %token EQUALEQUAL LESSTHANOREQUAL GREATERTHANOREQUAL NOTEQUAL
 %token LOGICAL_AND LOGICAL_NOT LOGICAL_OR
-
+%token READ WRITE
 
 %left '<' '>'
 %left EQUALEQUAL LESSTHANOREQUAL GREATERTHANOREQUAL NOTEQUAL
@@ -58,16 +58,16 @@ func_call:
 	|
 	;
 Fdef:
-	VARIABLE '('  ')' '{'  stmt_list  '}'	{ declareFn($1,$5);	}
+	VARIABLE '('  ')' '{'  stmt_list  '}'	{ printf("fdef\n");$$ = declareFn($1,$5);	}
 	;
 varList:
 	VARIABLE  {printf("1 in varList\n");$$ = opr(DECLARE, 1, id($1));}
-	| varList ',' VARIABLE {printf("2 in VarList\n");$$ = opr(DECLARE_List, 2, id($3), $1);}
+	| varList ',' VARIABLE {printf("2 in VarList\n");$$ = opr(DECLARE_List, 2, opr(DECLARE,1,id($1)), $3);}
 	|
 	;
 pList:
 	expr {$$ = opr(PRINT, 1, ($1));}
-	| expr ',' pList {$$ = opr(PRINT, 2, $1, $3);}
+	| expr ',' pList {$$ = opr(PRINT_List, 2, opr(PRINT,1,id($1)), $3);}
 	|
 	;
 stmt_list:	/* NULL */		{ $$ =con(0) ;}
@@ -88,7 +88,7 @@ stmt:
 	;
 expr:	
 	NUMBER { $$ = con($1); }
-	|VARIABLE {$$ = con(getVal($1));}
+	|VARIABLE {/*printf("thaan evde ano?\n");*/$$ = id($1);}
 	| expr '+' expr { $$ = opr('+', 2, $1, $3); }
 	| expr '-' expr { $$ = opr('-', 2, $1, $3); }
 	| expr '*' expr { $$ = opr('*', 2, $1, $3); }

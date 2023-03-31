@@ -54,20 +54,23 @@ extern int yydebug;
     DECLARE = 264,
     STMNT = 265,
     DECLARE_List = 266,
-    IF = 267,
-    THEN = 268,
-    ELSE = 269,
-    ENDIF = 270,
-    DO = 271,
-    WHILE = 272,
-    ENDWHILE = 273,
-    EQUALEQUAL = 274,
-    LESSTHANOREQUAL = 275,
-    GREATERTHANOREQUAL = 276,
-    NOTEQUAL = 277,
-    LOGICAL_AND = 278,
-    LOGICAL_NOT = 279,
-    LOGICAL_OR = 280
+    PRINT_List = 267,
+    IF = 268,
+    THEN = 269,
+    ELSE = 270,
+    ENDIF = 271,
+    DO = 272,
+    WHILE = 273,
+    ENDWHILE = 274,
+    EQUALEQUAL = 275,
+    LESSTHANOREQUAL = 276,
+    GREATERTHANOREQUAL = 277,
+    NOTEQUAL = 278,
+    LOGICAL_AND = 279,
+    LOGICAL_NOT = 280,
+    LOGICAL_OR = 281,
+    READ = 282,
+    WRITE = 283
   };
 #endif
 /* Tokens.  */
@@ -80,20 +83,23 @@ extern int yydebug;
 #define DECLARE 264
 #define STMNT 265
 #define DECLARE_List 266
-#define IF 267
-#define THEN 268
-#define ELSE 269
-#define ENDIF 270
-#define DO 271
-#define WHILE 272
-#define ENDWHILE 273
-#define EQUALEQUAL 274
-#define LESSTHANOREQUAL 275
-#define GREATERTHANOREQUAL 276
-#define NOTEQUAL 277
-#define LOGICAL_AND 278
-#define LOGICAL_NOT 279
-#define LOGICAL_OR 280
+#define PRINT_List 267
+#define IF 268
+#define THEN 269
+#define ELSE 270
+#define ENDIF 271
+#define DO 272
+#define WHILE 273
+#define ENDWHILE 274
+#define EQUALEQUAL 275
+#define LESSTHANOREQUAL 276
+#define GREATERTHANOREQUAL 277
+#define NOTEQUAL 278
+#define LOGICAL_AND 279
+#define LOGICAL_NOT 280
+#define LOGICAL_OR 281
+#define READ 282
+#define WRITE 283
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -106,7 +112,7 @@ union YYSTYPE
 	char* str;
 	node *nPtr; /* node pointer */
 
-#line 110 "bin/y.tab.h" /* yacc.c:1909  */
+#line 116 "bin/y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
