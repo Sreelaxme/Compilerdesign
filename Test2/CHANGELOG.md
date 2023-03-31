@@ -1,1 +1,2 @@
 - starting with the test, make file created
+- trying to implement declaration but not working
