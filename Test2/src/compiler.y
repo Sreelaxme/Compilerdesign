@@ -12,6 +12,7 @@ void freeNode(node *p);
 int declareFn(char* name, node* ptr);
 node* getFn(char* str);
 int updateFunStat(char* str,node* ptr);
+void printSyntaxTree(node* p);
 //struct sym symTab[100];
 %}
 
@@ -56,13 +57,18 @@ int updateFunStat(char* str,node* ptr);
 // 	|
 // 	;
 
+
 program:
 	|program Fdef endl 
-	|program decl_stmt endl {ex($2);}
-	|program main endl {ex($2);}
+	|program decl_stmt endl {printf("\n\nSYNTAX TREE\n"); printSyntaxTree($2); ex($2);}
+	|program main endl {printf("\n\nSYNTAX TREE\n"); printSyntaxTree($2); 
+							printf("\n\n\nPROGRAM OUTPUT \n"); 
+									ex($2);
+									printf("\nSymbol Table\n");
+									printSymTab();}
 	;
 main:
-	INT MAIN '(' ')' '{' endl Begin endl stmt_list endl End endl '}' { printf("found main\n"); $$ = $9;}
+	INT MAIN '(' ')' '{' endl Begin endl stmt_list endl End endl '}' {/* printf("found main\n");*/ $$ = $9;}
 	;
 endl:
 	|endl '\n'
@@ -85,12 +91,12 @@ pList:
 	;
 stmt_list:	/* NULL */		{ $$ =con(0) ;}
 		| 	stmt endl {$$ = $1 ;}
-		|	stmt stmt_list	endl{$$ = opr(STMNT , 2, $1 ,$2) ;}
+		|	stmt endl stmt_list{$$ = opr(STMNT , 2, $1 ,$3) ;}
 		
 		|	error ';' 		{printf("error\n") ; $$ = con(0)  ;}
 
 decl_stmt:
-	|DECL endl INT varList ';' endl ENDDECL  {printf("Global declaration \n"); $$=$4;}
+	|DECL endl INT varList ';' endl ENDDECL  {/*printf("Global declaration \n"); */ $$=$4;}
 	;
 stmt:
 	expr ';' { $$=$1;/*printf("%d\n",ex($1));*/ }
@@ -98,8 +104,8 @@ stmt:
 	| VARIABLE '=' expr ';'{/*printf("variable assignment\n");*/$$ = opr('=', 2, id($1), $3);}
 						
 	| PRINT pList';' { /*printf("trying to print\n");*/ $$ = $2;} 
-	| IF expr THEN endl stmt_list endl ELSE endl stmt_list endl ENDIF ';' { printf("ifelse il keri\n") ; $$ = opr(IF,3,$2,$5,$9);}
-	| WHILE expr DO endl stmt_list endl ENDWHILE ';' { printf("while il keri \n"); $$ = opr(WHILE,2,$2,$5);}
+	| IF expr THEN endl stmt_list endl ELSE endl stmt_list endl ENDIF ';' { /*printf("ifelse il keri\n") ;*/ $$ = opr(IF,3,$2,$5,$9);}
+	| WHILE expr DO endl stmt_list endl ENDWHILE ';' { /*printf("while il keri \n");*/ $$ = opr(WHILE,2,$2,$5);}
 	;
 expr:	
 	NUMBER { $$ = con($1); }

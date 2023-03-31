@@ -4,3 +4,5 @@
 - while is working
 
 - 5 pm : Main bloc working...with while inside it.
+
+- syntax tree printed

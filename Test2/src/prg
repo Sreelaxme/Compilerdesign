@@ -3,8 +3,10 @@ integer x ;
 enddecl 
 integer main() { 
 begin
-x =2 ;while (x>0) do 
-write x ; x = x-1; 
+x =2 ;
+while (x>0) do 
+write x ; 
+x = x-1; 
 endwhile ; 
 end 
 }
