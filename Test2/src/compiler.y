@@ -13,7 +13,8 @@ int declareFn(char* name, node* ptr);
 node* getFn(char* str);
 int updateFunStat(char* str,node* ptr);
 void printSyntaxTree(node* p);
-//struct sym symTab[100];
+void printSymTab();
+struct sym symTab[100];
 %}
 
 %union {
@@ -59,13 +60,14 @@ void printSyntaxTree(node* p);
 
 
 program:
-	|program Fdef endl 
-	|program decl_stmt endl {printf("\n\nSYNTAX TREE\n"); printSyntaxTree($2); ex($2);}
-	|program main endl {printf("\n\nSYNTAX TREE\n"); printSyntaxTree($2); 
-							printf("\n\n\nPROGRAM OUTPUT \n"); 
+	|program endl Fdef endl 
+	|program endl decl_stmt endl {/*printf("\n\nSYNTAX TREE\n"); printSyntaxTree($2); */ex($3);}
+	|program main endl {/*printf("\n\nSYNTAX TREE\n"); printSyntaxTree($2); 
+							printf("\n\n\nPROGRAM OUTPUT \n"); */
 									ex($2);
-									printf("\nSymbol Table\n");
-									printSymTab();}
+									/*printf("\nSymbol Table\n");
+									printSymTab();*/}
+	| program endl func_call endl
 	;
 main:
 	INT MAIN '(' ')' '{' endl Begin endl stmt_list endl End endl '}' {/* printf("found main\n");*/ $$ = $9;}
@@ -83,11 +85,11 @@ Fdef:
 	;
 varList:
 	VARIABLE  {/*printf("1 in varList\n");*/$$ = opr(DECLARE, 1, id($1));}
-	| varList ',' VARIABLE {printf("2 in VarList\n");$$ = opr(DECLARE_List, 2, opr(DECLARE,1,id($1)), $3);}
+	| VARIABLE ',' varList {/*printf("2 in VarList\n");*/$$ = opr(DECLARE_List, 2, opr(DECLARE,1,id($1)), $3);}
 	;
 pList:
-	expr {$$ = opr(PRINT, 1, ($1));}
-	| expr ',' pList {$$ = opr(PRINT_List, 2, opr(PRINT,1,id($1)), $3);}
+	expr {$$ = opr(PRINT, 1, $1);}
+	| expr ',' pList {$$ = opr(PRINT_List, 2, opr(PRINT,1,$1), $3);}
 	;
 stmt_list:	/* NULL */		{ $$ =con(0) ;}
 		| 	stmt endl {$$ = $1 ;}
@@ -96,7 +98,7 @@ stmt_list:	/* NULL */		{ $$ =con(0) ;}
 		|	error ';' 		{printf("error\n") ; $$ = con(0)  ;}
 
 decl_stmt:
-	|DECL endl INT varList ';' endl ENDDECL  {/*printf("Global declaration \n"); */ $$=$4;}
+	DECL endl INT varList ';' endl ENDDECL  {/*printf("Global declaration \n"); */ $$=$4;}
 	;
 stmt:
 	expr ';' { $$=$1;/*printf("%d\n",ex($1));*/ }
@@ -141,6 +143,7 @@ node *id(char* var) {
 		yyerror("out of memory");
 	p->type = typeId; /*type is set*/
 	p->id.id = var; /*type is con and copied value to it*/
+	//printf("id\n");
 	return p;
 }
 node *opr(int oper, int nops, ...) {
@@ -161,7 +164,7 @@ node *opr(int oper, int nops, ...) {
 	for (i = 0; i < nops; i++)
 		p->opr.op[i] = va_arg(ap, node*);
 	va_end(ap);
-	
+	//printf("opr\n");
 	return p;
 }
 void freeNode(node *p) {

@@ -1,11 +1,11 @@
 decl
-integer x ;
+integer x,y;
 enddecl 
 integer main() { 
 begin
-x =2 ;
+x=3;
 while (x>0) do 
-write x ; 
+write 3+2,1,3; 
 x = x-1; 
 endwhile ; 
 end 

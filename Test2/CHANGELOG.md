@@ -6,3 +6,7 @@
 - 5 pm : Main bloc working...with while inside it.
 
 - syntax tree printed
+
+- declare of multiple statements is working, need to correct printlist
+
+- prinlist error fixed

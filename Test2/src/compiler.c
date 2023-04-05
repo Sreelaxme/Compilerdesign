@@ -8,7 +8,7 @@
 int ex(node *p) {
 	 if (!p) return 0;
 	 switch(p->type) {
-		 case typeCon: /*printf("cons\n",p->con.value);*/return p->con.value;
+		 case typeCon: /*printf("cons\n");*/return p->con.value;
 		 case typeId: return getVal(p->id.id);
 		 case typeOpr:
 			switch(p->opr.oper) {
@@ -24,8 +24,8 @@ int ex(node *p) {
 					//printf("Case = il aanu,%s,%d \n" ,p->opr.op[0]->id.id,ex(p->opr.op[1]));
 					return update((p->opr.op[0]->id.id) , ex(p->opr.op[1]));
 				}
-				case PRINT: printf("%d\n", ex(p->opr.op[0])); return 0 ;
-				case PRINT_List: printf("%d\n", ex(p->opr.op[0]));ex(p->opr.op[1]) ;return 0;
+				case PRINT:printf("%d\n", ex(p->opr.op[0])); return 0;
+				case PRINT_List: ex(p->opr.op[0]); ex(p->opr.op[1]) ; return 0;
  							
 				case IF : if(ex(p->opr.op[0])==1)
 							return ex(p->opr.op[1]) ;
@@ -43,15 +43,15 @@ int ex(node *p) {
 				}
 							
 				case DECLARE:
-							{
-								
+						
+								printf("declare\n");
 								declare(p->opr.op[0]->id.id); return 0;
-							} 
+					
 				case DECLARE_List:
-							{
-								
-								declare(p->opr.op[0]->id.id); return ex(p->opr.op[1]);
-							} 
+					
+								printf("Im here\n");
+								ex(p->opr.op[0]); ex(p->opr.op[1]) ;return 0;;
+							
 				case GREATERTHANOREQUAL : return ex(p->opr.op[0]) >= ex(p->opr.op[1]);
 				case LESSTHANOREQUAL : return ex(p->opr.op[0]) <= ex(p->opr.op[1]);
 				case NOTEQUAL : return ex(p->opr.op[0]) != ex(p->opr.op[1]);
@@ -139,9 +139,9 @@ int symRead(char* name)
 int declare(char* name)
 {
 	//printf("decl\n");
-    char* newName = malloc(sizeof(char)*strlen(name));
-	strcpy(newName,name);
-
+    //char* newName = malloc(sizeof(char)*strlen(name));
+	 char* newName = strdup(name);
+	//printf("144\n");
 	int i;
 	for(i=0;i<100 && symTab[i].allocated;i++)
 	{
@@ -167,6 +167,8 @@ void printSymTab()
   printf("index\tname\talloc\n");
   for (;i<100 ; i++)
       printf("%d\t%s\t%d\n", i,symTab[i].name,symTab[i].allocated);
+	  //if(symTab[i].type == typeInt) printf("%d\n",symTab[i].val );
+	  //printf("\n");
 
 }
 int declareFn(char* name, node* ptr)
