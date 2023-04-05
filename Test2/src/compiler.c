@@ -60,6 +60,11 @@ int ex(node *p) {
 				case LOGICAL_AND : return ex(p->opr.op[0]) && ex(p->opr.op[1]);
 				case LOGICAL_OR : return ex(p->opr.op[0]) || ex(p->opr.op[1]);
 				case STMNT : ex(p->opr.op[0]);ex(p->opr.op[1]) ;return 0;
+				case ARRAY_DECLARE : declare_array(p->opr.op[0]->id.id,ex(p->opr.op[1]));
+				case ARRAY_ASSIGN : update_arr(p->opr.op[0]->id.id,ex(p->opr.op[1]),ex(p->opr.op[2]));
+				case INDEX:
+            return fetch_var_ar(p->opr.op[0]->id.id, ex(p->opr.op[1]));
+
 			}
 	 }
 	 return 0;
@@ -110,6 +115,8 @@ void printSyntaxTree(node *p) {
 		case STMNT: { 
 						printf("STATEMENT ("); printSyntaxTree(p->opr.op[0]); 
 						printf(","); printSyntaxTree(p->opr.op[1]); printf(")");return; }
+		case ARRAY_DECLARE : printf("ARRAY_DECLARE"); /*declare_array(p->opr.op[0]->id.id,ex(p->opr.op[1]));*/
+				case ARRAY_ASSIGN : printf("ARRAY_ASSIGN");/*update_arr(p->opr.op[0]->id.id,ex(p->opr.op[1]),ex(p->opr.op[2]));*/
 		
  	}
 
@@ -127,14 +134,18 @@ int symRead(char* name)
 		if(strcmp(symTab[i].name,newName)==0) return i;
 	}
 	if(i>=100) return -1;
-	// char* newName = malloc(sizeof(char)*strlen(name));
 	
-	//printf("symRexit\n");
 	
 	return -1;
 	// declare (newName);
 	// return i;
 	
+}
+int fetch_var_ar(char* name, int ar_index)
+{
+    int index = symRead(name);
+
+    return symTab[index].int_ar[ar_index];
 }
 int declare(char* name)
 {
@@ -152,6 +163,25 @@ int declare(char* name)
 	symTab[i].allocated=1;
 	symTab[i].type = typeInt ;
 	//printf("declared\n");
+	return i;
+}
+int declare_array(char* name,int size)
+{
+	char* newName = malloc(sizeof(char)*strlen(name));
+	strcpy(newName,name);
+	int i;
+	for(i=0;i<100 && symTab[i].allocated;i++)
+	{
+		if(strcmp(symTab[i].name,newName)==0) return i;
+	}
+	if(i>=100) return -1;
+	symTab[i].name = newName;
+	symTab[i].allocated=size;
+	symTab[i].type = typeArr ;
+	symTab[i].int_ar=malloc(sizeof(int)*size);
+	
+	printf("declared array");
+
 	return i;
 }
 int updateFunStat(char* str,node* ptr)
@@ -187,6 +217,7 @@ int declareFn(char* name, node* ptr)
 	symTab[i].type = typeNode;
 	updateFunStat(name,ptr);
 }
+
 int getVal(char* str)
 {
 	int index = symRead(str);
@@ -207,8 +238,18 @@ node* getFn(char* str)
 int update(char* str,int value)
 {
 	int index = symRead(str);
-	symTab[index].allocated=1;
+	//symTab[index].allocated=1;
 	symTab[index].val=value;
 	//printf("update done ...so variable assigned correctly to %d \n",symTab[index].val);
 	return 1;
 }
+int update_arr(char * str, int ar_index, int value)
+{
+	int index = symRead(str);
+	//symTab[index].allocated=1;
+	symTab[index].int_ar[ar_index]=value;
+	//printf("update done ...so variable assigned correctly to %d \n",symTab[index].int_ar[ar_index]);
+	//printf("array val updated\n");
+	return 1;
+}
+

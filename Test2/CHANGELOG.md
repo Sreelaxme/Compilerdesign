@@ -10,3 +10,5 @@
 - declare of multiple statements is working, need to correct printlist
 
 - prinlist error fixed
+
+- test case passed by changing end while into endwhile

@@ -15,6 +15,8 @@ int updateFunStat(char* str,node* ptr);
 void printSyntaxTree(node* p);
 void printSymTab();
 struct sym symTab[100];
+int update_arr(char * str, int ar_index, int value);
+int declare_array(char* name,int size);
 %}
 
 %union {
@@ -26,12 +28,13 @@ struct sym symTab[100];
 %token <iValue> NUMBER
 %token <str> VARIABLE
 %token PRINT DECL ENDDECL INT DECLARE STMNT DECLARE_List PRINT_List Begin End
-%token MAIN 
+%token MAIN INDEX
 %token IF THEN ELSE ENDIF
 %token DO WHILE ENDWHILE
 %token EQUALEQUAL LESSTHANOREQUAL GREATERTHANOREQUAL NOTEQUAL
 %token LOGICAL_AND LOGICAL_NOT LOGICAL_OR
 %token READ WRITE
+%token ARRAY_DECLARE ARRAY_ASSIGN
 
 %left '<' '>'
 %left EQUALEQUAL LESSTHANOREQUAL GREATERTHANOREQUAL NOTEQUAL
@@ -42,7 +45,7 @@ struct sym symTab[100];
 %left LOGICAL_NOT
 
 
-%type <nPtr> expr stmt varList pList Fdef stmt_list decl_stmt main
+%type <nPtr> expr stmt varList pList Fdef stmt_list decl_stmt main array var
 %%
 
 
@@ -84,9 +87,15 @@ Fdef:
 	VARIABLE '('  ')' '{' endl Begin endl stmt_list endl End endl '}'	{ /*printf("fdef\n");*/$$ = declareFn($1,$8);	}
 	;
 varList:
-	VARIABLE  {/*printf("1 in varList\n");*/$$ = opr(DECLARE, 1, id($1));}
-	| VARIABLE ',' varList {/*printf("2 in VarList\n");*/$$ = opr(DECLARE_List, 2, opr(DECLARE,1,id($1)), $3);}
+	| var {$$ = $1;}
+	//| VARIABLE ',' varList {/*printf("2 in VarList\n");*/$$ = opr(DECLARE_List, 2, opr(DECLARE,1,id($1)), $3);}
+	| var ',' varList {$$ = opr(DECLARE_List,2,$1,$3);}
+
+var:
+	| VARIABLE '[' NUMBER ']' {$$ = opr(ARRAY_DECLARE,2,id($1),con($3));}
+	|VARIABLE  {/*printf("1 in varList\n");*/$$ = opr(DECLARE, 1, id($1));}
 	;
+
 pList:
 	expr {$$ = opr(PRINT, 1, $1);}
 	| expr ',' pList {$$ = opr(PRINT_List, 2, opr(PRINT,1,$1), $3);}
@@ -101,7 +110,8 @@ decl_stmt:
 	DECL endl INT varList ';' endl ENDDECL  {/*printf("Global declaration \n"); */ $$=$4;}
 	;
 stmt:
-	expr ';' { $$=$1;/*printf("%d\n",ex($1));*/ }
+	expr ';' { $$=$1;}
+	| VARIABLE '[' expr ']' '=' expr ';' {$$ = opr(ARRAY_ASSIGN,3,id($1),$3,$6);}
 	| decl_stmt {$$ = $1;}
 	| VARIABLE '=' expr ';'{/*printf("variable assignment\n");*/$$ = opr('=', 2, id($1), $3);}
 						
@@ -112,6 +122,7 @@ stmt:
 expr:	
 	NUMBER { $$ = con($1); }
 	|VARIABLE {/*printf("thaan evde ano?\n");*/$$ = id($1);}
+	| VARIABLE '[' expr ']' {$$ = opr(INDEX,2,id($1),$3);}
 	| expr '+' expr { $$ = opr('+', 2, $1, $3); }
 	| expr '-' expr { $$ = opr('-', 2, $1, $3); }
 	| expr '*' expr { $$ = opr('*', 2, $1, $3); }

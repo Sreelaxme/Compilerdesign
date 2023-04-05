@@ -17,3 +17,5 @@ test : dir calculator
 	./bin/calc.out < src/1
 test2: dir calculator
 	./bin/calc.out < src/prg 
+test1: dir calculator
+	./bin/calc.out < src/test
