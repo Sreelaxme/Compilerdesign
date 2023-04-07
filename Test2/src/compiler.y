@@ -65,7 +65,8 @@ int declare_array(char* name,int size);
 program:
 	|program endl Fdef endl 
 	|program endl decl_stmt endl {printf("\n\nSYNTAX TREE\n"); printSyntaxTree($3); ex($3);}
-	|program main endl {/*printf("\n\nSYNTAX TREE\n");*/ printSyntaxTree($2); 
+	|program main endl {printf("\n");printf("FUN INT MAIN \n"); printSyntaxTree($2);
+							printf("\nEND MAIN\n"); 
 							printf("\n\n\nPROGRAM OUTPUT \n"); 
 									ex($2);
 									printf("\nSymbol Table\n");
@@ -100,8 +101,8 @@ pList:
 	expr {$$ = opr(PRINT, 1, $1);}
 	| expr ',' pList {$$ = opr(PRINT_List, 2, opr(PRINT,1,$1), $3);}
 	;
-stmt_list:	/* NULL */		{ $$ =con(0) ;}
-		| 	stmt endl {$$ = $1 ;}
+stmt_list:	
+		stmt endl {$$ = $1 ;}
 		|	stmt endl stmt_list{$$ = opr(STMNT , 2, $1 ,$3) ;}
 		
 		|	error ';' 		{printf("error\n") ; $$ = con(0)  ;}

@@ -69,6 +69,7 @@ int ex(node *p) {
 	 }
 	 return 0;
  }
+ int count = 0;
 void printSyntaxTree(node *p) {
 
  if (!p) {
@@ -87,7 +88,7 @@ void printSyntaxTree(node *p) {
         case '<': printf("LESS (");printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]); printf(")");return ;
         case '>': printf("GREATER (");printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]);printf(")");return ;
         case '%': printf("MOD (");printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]);printf(")");return ;
-		case '=': printf("ASSIGN ("); printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[0]); printf(")"); return ;
+		case '=': printf("ASSIGN ("); printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]); printf(")"); return ;
 		case PRINT :  printf("PRINT ("); printSyntaxTree(p->opr.op[0]); printf(")"); return ;
 		case PRINT_List :  printf("PRINT ("); printSyntaxTree(p->opr.op[0]); printf(",");printSyntaxTree(p->opr.op[1]); printf(")"); return ;
 		case IF : 	{ 
@@ -108,7 +109,14 @@ void printSyntaxTree(node *p) {
 							decl--;
 							if(!decl) printf("\n");
 							return ;
-		case DECLARE :  printf("VAR "); /*printSyntaxTree(p->opr.op[0]); printf(")");*/ return ;
+		case DECLARE :  if(!decl)printf("DECL "); 
+							decl++;
+							printSyntaxTree(p->opr.op[0]);
+							decl--;
+							if(!decl)
+							printf("\n");
+
+							return ;
 		
         case GREATERTHANOREQUAL: printf("GREATERTHANOREQUAL "); printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]); printf(")"); return ;
         case LESSTHANOREQUAL: printf("LESSTHANOREQUAL "); printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]); printf(")");return ;
@@ -125,7 +133,7 @@ void printSyntaxTree(node *p) {
 					}
 		case ARRAY_DECLARE : printf("ARR VAR "); printf(" %d", p->opr.op[1]->con.value);/*printSyntaxTree(p->opr.op[0]);printf(")");*/return ;
 		case ARRAY_ASSIGN : printf("ASSIGN ARREF ");printSyntaxTree(p->opr.op[0]); printSyntaxTree(p->opr.op[1]); printSyntaxTree(p->opr.op[2]);printf(")");return ;
-		case INDEX: printf("ARREF VAR "); return;
+		case INDEX: printf("ARREF VAR "); printSyntaxTree(p->opr.op[0]); return;
 		
  	}
 
@@ -205,6 +213,7 @@ void printSymTab()
   int i=0;
   printf("index\tname\talloc\n");
   for (;i<100 ; i++)
+	if(symTab[i].name)
       printf("%d\t%s\t%d\n", i,symTab[i].name,symTab[i].allocated);
 	  //if(symTab[i].type == typeInt) printf("%d\n",symTab[i].val );
 	  //printf("\n");

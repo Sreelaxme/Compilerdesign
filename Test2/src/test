@@ -1,0 +1,8 @@
+decl
+integer x;
+enddecl 
+integer main(){
+begin   
+    x=0;	
+end
+}
