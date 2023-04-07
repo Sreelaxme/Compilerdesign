@@ -211,12 +211,21 @@ int updateFunStat(char* str,node* ptr)
 void printSymTab()
 {
   int i=0;
-  printf("index\tname\talloc\n");
+  printf("index\tname\talloc\tval\n");
   for (;i<100 ; i++)
 	if(symTab[i].name)
-      printf("%d\t%s\t%d\n", i,symTab[i].name,symTab[i].allocated);
-	  //if(symTab[i].type == typeInt) printf("%d\n",symTab[i].val );
-	  //printf("\n");
+	{
+		printf("%d\t%s\t%d\t", i,symTab[i].name,symTab[i].allocated);
+	  if(symTab[i].type == typeInt) printf("%d",symTab[i].val );
+	  else if(symTab[i].type == typeNode)printf("%d",symTab[i].nodeptr );
+	  else if(symTab[i].type == typeArr)
+	  {
+		for(int j=0;j<symTab[i].allocated;j++)
+		printf("%d ",symTab[i].int_ar[j]);
+	  }
+	  printf("\n");
+	}
+      
 
 }
 int declareFn(char* name, node* ptr)
