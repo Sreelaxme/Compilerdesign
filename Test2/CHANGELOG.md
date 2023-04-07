@@ -12,3 +12,5 @@
 - prinlist error fixed
 
 - test case passed by changing end while into endwhile
+
+- syntax tree completed

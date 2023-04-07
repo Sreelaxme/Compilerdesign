@@ -68,8 +68,8 @@ program:
 	|program main endl {/*printf("\n\nSYNTAX TREE\n");*/ printSyntaxTree($2); 
 							printf("\n\n\nPROGRAM OUTPUT \n"); 
 									ex($2);
-									/*printf("\nSymbol Table\n");
-									printSymTab();*/}
+									printf("\nSymbol Table\n");
+									printSymTab();}
 	| program endl func_call endl
 	;
 main:
