@@ -64,9 +64,9 @@ int declare_array(char* name,int size);
 
 program:
 	|program endl Fdef endl 
-	|program endl decl_stmt endl {/*printf("\n\nSYNTAX TREE\n"); printSyntaxTree($2); */ex($3);}
-	|program main endl {/*printf("\n\nSYNTAX TREE\n"); printSyntaxTree($2); 
-							printf("\n\n\nPROGRAM OUTPUT \n"); */
+	|program endl decl_stmt endl {printf("\n\nSYNTAX TREE\n"); printSyntaxTree($3); ex($3);}
+	|program main endl {/*printf("\n\nSYNTAX TREE\n");*/ printSyntaxTree($2); 
+							printf("\n\n\nPROGRAM OUTPUT \n"); 
 									ex($2);
 									/*printf("\nSymbol Table\n");
 									printSymTab();*/}
