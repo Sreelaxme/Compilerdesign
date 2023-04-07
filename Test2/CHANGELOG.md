@@ -17,3 +17,6 @@ make test to run
 - test case passed by changing end while into endwhile
 
 - syntax tree completed
+
+- April 7 8pm Almost completed, all functions working, printed syntax tree and symbol table with name and value and allocation status
+- only the used symbols details is printed in the symbol table, can print the whole table if needed with unallocated values 
