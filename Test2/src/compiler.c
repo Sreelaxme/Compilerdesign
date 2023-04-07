@@ -91,14 +91,14 @@ void printSyntaxTree(node *p) {
 		case PRINT :  printf("PRINT ("); printSyntaxTree(p->opr.op[0]); printf(")"); return ;
 		case PRINT_List :  printf("PRINT ("); printSyntaxTree(p->opr.op[0]); printf(",");printSyntaxTree(p->opr.op[1]); printf(")"); return ;
 		case IF : 	{ 
-						printf("IF "); printSyntaxTree(p->opr.op[0]); printf(","); 
-						printSyntaxTree(p->opr.op[1]); printf(",");
-						printSyntaxTree(p->opr.op[2]); printf(")");return;
+						printf("IF "); printSyntaxTree(p->opr.op[0]); printf("\n"); 
+						printSyntaxTree(p->opr.op[1]); printf("\nELSE ");
+						printSyntaxTree(p->opr.op[2]); printf("\nENDIF");return;
 					}
 		case WHILE: {
 						printf("WHILE "); printSyntaxTree(p->opr.op[0]); 
-						printf(","); printSyntaxTree(p->opr.op[1]);
-						printf(")"); return;
+						printf("\n"); printSyntaxTree(p->opr.op[1]); printf("\nEND WHILE");
+						return;
 				}
 		case DECLARE_List :  if(!decl)printf("DECL INT "); 
 							decl++;
@@ -124,7 +124,7 @@ void printSyntaxTree(node *p) {
 						printf("\n"); printSyntaxTree(p->opr.op[1]);return; 
 					}
 		case ARRAY_DECLARE : printf("ARR VAR "); printf(" %d", p->opr.op[1]->con.value);/*printSyntaxTree(p->opr.op[0]);printf(")");*/return ;
-		case ARRAY_ASSIGN : printf("ASSIGN (");printSyntaxTree(p->opr.op[0]); printSyntaxTree(p->opr.op[1]); printSyntaxTree(p->opr.op[2]);printf(")");return ;
+		case ARRAY_ASSIGN : printf("ASSIGN ARREF ");printSyntaxTree(p->opr.op[0]); printSyntaxTree(p->opr.op[1]); printSyntaxTree(p->opr.op[2]);printf(")");return ;
 		case INDEX: printf("ARREF VAR "); return;
 		
  	}
