@@ -68,9 +68,10 @@ node* getFn(char* str);
 
 
 program:
-	|program endl Fdef endl {printf("prgrm 1 \n"); printSyntaxTree($3); ex($3);}
+	|program endl Fdef endl {/*printf("prgrm 1 \n");*/ printSyntaxTree($3); ex($3);}
 	|program endl decl_stmt endl {printf("\n\nSYNTAX TREE\n"); printSyntaxTree($3); ex($3);}
-	|program endl main endl {
+	|program endl main endl { printf("main\n");
+							printSyntaxTree($3);
 							printf("\n\n\nPROGRAM OUTPUT \n"); 
 									ex($3);
 									printf("\nSymbol Table\n");
@@ -82,7 +83,7 @@ return_type:
 	|VOID 
 	;
 main:
-	return_type MAIN '(' ')' '{' endl Begin endl stmt_list endl End endl '}' {/*printf("found main\n");*/ $$ = opr(Main,1,$9);}
+	return_type MAIN '(' ')' '{' endl Begin endl stmt_list endl End endl '}' {printf("found main\n"); $$ = opr(Main,1,$9);}
 	;
 endl:
 	|endl '\n'

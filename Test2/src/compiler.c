@@ -137,6 +137,7 @@ void printSyntaxTree(node *p) {
 						return ;
 		case Main: printf("\n");printf("FUN INT MAIN \n"); printSyntaxTree(p->opr.op[1]);
 							printf("\nEND MAIN\n"); 
+							return ;
 		case CALL : 
 					printf("FUN CALL %s\n", p->opr.op[0]->id.id);
 					return ;
@@ -224,6 +225,32 @@ int declare_array(char* name,int size)
 
 	return i;
 }
+int declareFn(char* name, node* ptr)
+{
+	
+	char* newName = malloc(sizeof(char)*strlen(name));
+	printf("keri\n");
+	strcpy(newName,name);
+	
+	int i;
+	for(i=0;i<100 && symTab[i].allocated;i++)
+	{
+		if(strcmp(symTab[i].name,newName)==0) {
+			
+			return i;
+		}
+
+		
+	}
+	
+	if(i>=100) return -1;
+	symTab[i].name = newName;
+	symTab[i].allocated=1;
+	symTab[i].type = typeNode;
+	updateFunStat(name,ptr);
+	printf("Erangi\n");
+	return i;
+}
 int updateFunStat(char* str,node* ptr)
 {
 	int index = symRead(str);
@@ -251,22 +278,7 @@ void printSymTab()
       
 
 }
-int declareFn(char* name, node* ptr)
-{
-	char* newName = malloc(sizeof(char)*strlen(name));
-	strcpy(newName,name);
 
-	int i;
-	for(i=0;i<100 && symTab[i].allocated;i++)
-	{
-		if(strcmp(symTab[i].name,newName)==0) return i;
-	}
-	if(i>=100) return -1;
-	symTab[i].name = newName;
-	symTab[i].allocated=1;
-	symTab[i].type = typeNode;
-	updateFunStat(name,ptr);
-}
 
 int getVal(char* str)
 {

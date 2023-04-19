@@ -20,3 +20,8 @@ make test to run
 
 - April 7 8pm Almost completed, all functions working, printed syntax tree and symbol table with name and value and allocation status
 - only the used symbols details is printed in the symbol table, can print the whole table if needed with unallocated values 
+
+- Test2 completed
+---------------------------------------------------------------------
+## LAB PART
+- Found error is in declareFn (April 19 10:45)
