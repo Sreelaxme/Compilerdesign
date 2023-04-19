@@ -18,6 +18,7 @@ letter	[a-zA-Z]
 "decl" return DECL;
 "enddecl" return ENDDECL;
 "integer" return INT;
+"void"	return VOID;
 if				{return IF;}
 then				{return THEN ;	}	
 else				{return ELSE ;	}	

@@ -1,8 +1,16 @@
 decl
-integer x;
+integer i,a,d;
 enddecl 
+
+integer sum(){
+    begin
+        print 1;
+    end
+}
+
+
 integer main(){
 begin   
-    x=0;	
+    sum();	
 end
 }

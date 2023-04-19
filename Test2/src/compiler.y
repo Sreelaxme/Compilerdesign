@@ -17,6 +17,7 @@ void printSymTab();
 struct sym symTab[100];
 int update_arr(char * str, int ar_index, int value);
 int declare_array(char* name,int size);
+node* getFn(char* str);
 %}
 
 %union {
@@ -27,7 +28,9 @@ int declare_array(char* name,int size);
 
 %token <iValue> NUMBER
 %token <str> VARIABLE
-%token PRINT DECL ENDDECL INT DECLARE STMNT DECLARE_List PRINT_List Begin End
+%token INT VOID
+%token DECL ENDDECL DECLARE STMNT DECLARE_List DECLARE_Fn CALL Main
+%token PRINT  PRINT_List Begin End 
 %token MAIN INDEX
 %token IF THEN ELSE ENDIF
 %token DO WHILE ENDWHILE
@@ -46,6 +49,8 @@ int declare_array(char* name,int size);
 
 
 %type <nPtr> expr stmt varList pList Fdef stmt_list decl_stmt main array var
+%type <nPtr> func_call
+
 %%
 
 
@@ -63,29 +68,32 @@ int declare_array(char* name,int size);
 
 
 program:
-	|program endl Fdef endl 
+	|program endl Fdef endl {printf("prgrm 1 \n"); printSyntaxTree($3); ex($3);}
 	|program endl decl_stmt endl {printf("\n\nSYNTAX TREE\n"); printSyntaxTree($3); ex($3);}
-	|program main endl {printf("\n");printf("FUN INT MAIN \n"); printSyntaxTree($2);
-							printf("\nEND MAIN\n"); 
+	|program endl main endl {
 							printf("\n\n\nPROGRAM OUTPUT \n"); 
-									ex($2);
+									ex($3);
 									printf("\nSymbol Table\n");
 									printSymTab();}
 	| program endl func_call endl
 	;
+return_type:
+	INT
+	|VOID 
+	;
 main:
-	INT MAIN '(' ')' '{' endl Begin endl stmt_list endl End endl '}' {/* printf("found main\n");*/ $$ = $9;}
+	return_type MAIN '(' ')' '{' endl Begin endl stmt_list endl End endl '}' {/*printf("found main\n");*/ $$ = opr(Main,1,$9);}
 	;
 endl:
 	|endl '\n'
 	;
 
 func_call:
-	 VARIABLE '(' ')' ';' {node * n = getFn($1);ex(n);}
+	 VARIABLE '(' ')'  { $$=opr(CALL,1,$1);}
 	|
 	;
 Fdef:
-	VARIABLE '('  ')' '{' endl Begin endl stmt_list endl End endl '}'	{ /*printf("fdef\n");*/$$ = declareFn($1,$8);	}
+	return_type VARIABLE '('  ')' '{' endl Begin endl stmt_list endl End endl '}'	{ /*printf("fdef\n");*/ $$ = opr(DECLARE_Fn,2,$2,$9);	}
 	;
 varList:
 	| var {$$ = $1;}
@@ -119,6 +127,7 @@ stmt:
 	| PRINT pList';' { /*printf("trying to print\n");*/ $$ = $2;} 
 	| IF expr THEN endl stmt_list endl ELSE endl stmt_list endl ENDIF ';' { /*printf("ifelse il keri\n") ;*/ $$ = opr(IF,3,$2,$5,$9);}
 	| WHILE expr DO endl stmt_list endl ENDWHILE ';' { /*printf("while il keri \n");*/ $$ = opr(WHILE,2,$2,$5);}
+	| func_call '(' ')' ';' {$$ = $1;}
 	;
 expr:	
 	NUMBER { $$ = con($1); }

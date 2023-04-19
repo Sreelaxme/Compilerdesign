@@ -50,8 +50,22 @@ int ex(node *p) {
 				case DECLARE_List:
 					
 								//printf("Im here\n");
-								ex(p->opr.op[0]); ex(p->opr.op[1]) ;return 0;;
-							
+								ex(p->opr.op[0]); ex(p->opr.op[1]) ;return 0;
+				case DECLARE_Fn:
+								//printf("Declare fn in c \n");
+								declareFn(p->opr.op[0]->id.id,p->opr.op[1]);
+								
+								return 0;
+				case CALL :
+							//node * x =getFn(p->opr.op[0]);
+							printf("%s",p->opr.op[0]);
+							//ex(x);
+							return ;
+				case Main: 
+							declareFn("main",p->opr.op[1]);
+							ex(p->opr.op[1]);
+							return ;
+
 				case GREATERTHANOREQUAL : return ex(p->opr.op[0]) >= ex(p->opr.op[1]);
 				case LESSTHANOREQUAL : return ex(p->opr.op[0]) <= ex(p->opr.op[1]);
 				case NOTEQUAL : return ex(p->opr.op[0]) != ex(p->opr.op[1]);
@@ -71,7 +85,7 @@ int ex(node *p) {
  }
  int count = 0;
 void printSyntaxTree(node *p) {
-
+//printf("Im in printSYntax");
  if (!p) {
 	printf("NULL");
 	return ;
@@ -117,6 +131,15 @@ void printSyntaxTree(node *p) {
 							printf("\n");
 
 							return ;
+		case DECLARE_Fn: printf("FUN INT %s\n",p->opr.op[0]->id.id);
+						printSyntaxTree(p->opr.op[1]);
+						printf("\nEND FUN\n");
+						return ;
+		case Main: printf("\n");printf("FUN INT MAIN \n"); printSyntaxTree(p->opr.op[1]);
+							printf("\nEND MAIN\n"); 
+		case CALL : 
+					printf("FUN CALL %s\n", p->opr.op[0]->id.id);
+					return ;
 		
         case GREATERTHANOREQUAL: printf("GREATERTHANOREQUAL "); printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]); printf(")"); return ;
         case LESSTHANOREQUAL: printf("LESSTHANOREQUAL "); printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]); printf(")");return ;
@@ -217,11 +240,11 @@ void printSymTab()
 	{
 		printf("%d\t%s\t%d\t", i,symTab[i].name,symTab[i].allocated);
 	  if(symTab[i].type == typeInt) printf("%d",symTab[i].val );
-	  else if(symTab[i].type == typeNode)printf("%d",symTab[i].nodeptr );
+	  else if(symTab[i].type == typeNode)printf("%p",symTab[i].nodeptr );
 	  else if(symTab[i].type == typeArr)
 	  {
 		for(int j=0;j<symTab[i].allocated;j++)
-		printf("%d ",symTab[i].int_ar[j]);
+		printf("%p ",symTab[i].int_ar[j]);
 	  }
 	  printf("\n");
 	}

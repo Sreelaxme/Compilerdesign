@@ -19,3 +19,9 @@ test2: dir calculator
 	./bin/calc.out < src/prg 
 test1: dir calculator
 	./bin/calc.out < src/test
+debug : bin/lex.yy.c bin/y.tab.c  bin/y.tab.h src/compiler.c
+		gcc -g bin/lex.yy.c bin/y.tab.c src/compiler.c -o bin/calc.out
+		gdb ./bin/calc.out
+	
+%.c: %.y
+%.c: %.l 
