@@ -25,3 +25,5 @@ make test to run
 ---------------------------------------------------------------------
 ## LAB PART
 - Found error is in declareFn (April 19 10:45)
+- Funcall working
+    - Need to implement functions which take arguments (April 19 13:04)

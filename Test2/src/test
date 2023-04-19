@@ -11,6 +11,7 @@ integer sum(){
 
 integer main(){
 begin   
-    sum();	
+    print 123;
+    sum();
 end
 }

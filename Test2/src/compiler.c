@@ -3,7 +3,7 @@
 #include "../bin/y.tab.h"
 #include <string.h>
 #include <stdlib.h>
-
+node* getFn(char* str);
 int decl = 0;
 int ex(node *p) {
 	 if (!p) return 0;
@@ -58,12 +58,15 @@ int ex(node *p) {
 								return 0;
 				case CALL :
 							//node * x =getFn(p->opr.op[0]);
-							printf("%s",p->opr.op[0]);
-							//ex(x);
+							//printf("njanah %s",p->opr.op[0]);
+							ex(getFn(p->opr.op[0]));
 							return ;
-				case Main: 
+				case Main: //printf("%s",p->opr.op[0]->id.id);
+				
 							declareFn("main",p->opr.op[1]);
+							//printf("njn evde vanno?\n");
 							ex(p->opr.op[1]);
+							
 							return ;
 
 				case GREATERTHANOREQUAL : return ex(p->opr.op[0]) >= ex(p->opr.op[1]);
@@ -139,7 +142,7 @@ void printSyntaxTree(node *p) {
 							printf("\nEND MAIN\n"); 
 							return ;
 		case CALL : 
-					printf("FUN CALL %s\n", p->opr.op[0]->id.id);
+					printf("FUN CALL %s\n", p->opr.op[0]);
 					return ;
 		
         case GREATERTHANOREQUAL: printf("GREATERTHANOREQUAL "); printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]); printf(")"); return ;
@@ -228,9 +231,12 @@ int declare_array(char* name,int size)
 int declareFn(char* name, node* ptr)
 {
 	
-	char* newName = malloc(sizeof(char)*strlen(name));
-	printf("keri\n");
-	strcpy(newName,name);
+	//char* newName = malloc(sizeof(char)*strlen(name));
+	//strcpy(newName,name);
+	 //printf("%s",name);
+	
+	char *newName=strdup(name);
+	 //printf("keri\n");
 	
 	int i;
 	for(i=0;i<100 && symTab[i].allocated;i++)
@@ -248,9 +254,10 @@ int declareFn(char* name, node* ptr)
 	symTab[i].allocated=1;
 	symTab[i].type = typeNode;
 	updateFunStat(name,ptr);
-	printf("Erangi\n");
+	//printf("njn evde vanno?\n");printf("Erangi\n");
 	return i;
 }
+//int declareMain(char* name,)
 int updateFunStat(char* str,node* ptr)
 {
 	int index = symRead(str);

@@ -27,7 +27,7 @@ node* getFn(char* str);
 };
 
 %token <iValue> NUMBER
-%token <str> VARIABLE
+%token <str> VARIABLE MAIN
 %token INT VOID
 %token DECL ENDDECL DECLARE STMNT DECLARE_List DECLARE_Fn CALL Main
 %token PRINT  PRINT_List Begin End 
@@ -68,33 +68,32 @@ node* getFn(char* str);
 
 
 program:
-	|program endl Fdef endl {/*printf("prgrm 1 \n");*/ printSyntaxTree($3); ex($3);}
+	|program endl Fdef endl {printf("prgrm 1 \n"); printSyntaxTree($3); ex($3);}
 	|program endl decl_stmt endl {printf("\n\nSYNTAX TREE\n"); printSyntaxTree($3); ex($3);}
-	|program endl main endl { printf("main\n");
+	|program endl main endl { /*printf("main\n");*/
 							printSyntaxTree($3);
 							printf("\n\n\nPROGRAM OUTPUT \n"); 
 									ex($3);
 									printf("\nSymbol Table\n");
 									printSymTab();}
-	| program endl func_call endl
+	| program endl func_call endl {printSyntaxTree($3);ex($3);}
 	;
 return_type:
 	INT
 	|VOID 
 	;
 main:
-	return_type MAIN '(' ')' '{' endl Begin endl stmt_list endl End endl '}' {printf("found main\n"); $$ = opr(Main,1,$9);}
+	return_type MAIN '(' ')' '{' endl Begin endl stmt_list endl End endl '}' {/*printf("found main\n");*/ $$ = opr(Main,2,id($2),$9);}
 	;
 endl:
 	|endl '\n'
 	;
 
 func_call:
-	 VARIABLE '(' ')'  { $$=opr(CALL,1,$1);}
-	|
+	 VARIABLE '(' ')' ';' { $$=opr(CALL,1,$1);}
 	;
 Fdef:
-	return_type VARIABLE '('  ')' '{' endl Begin endl stmt_list endl End endl '}'	{ /*printf("fdef\n");*/ $$ = opr(DECLARE_Fn,2,$2,$9);	}
+	return_type VARIABLE '('  ')' '{' endl Begin endl stmt_list endl End endl '}'	{ /*printf("fdef\n");*/ $$ = opr(DECLARE_Fn,2,id($2),$9);	}
 	;
 varList:
 	| var {$$ = $1;}
@@ -128,7 +127,8 @@ stmt:
 	| PRINT pList';' { /*printf("trying to print\n");*/ $$ = $2;} 
 	| IF expr THEN endl stmt_list endl ELSE endl stmt_list endl ENDIF ';' { /*printf("ifelse il keri\n") ;*/ $$ = opr(IF,3,$2,$5,$9);}
 	| WHILE expr DO endl stmt_list endl ENDWHILE ';' { /*printf("while il keri \n");*/ $$ = opr(WHILE,2,$2,$5);}
-	| func_call '(' ')' ';' {$$ = $1;}
+	| VARIABLE{/*printf("evdeya\n");*/$$=$1;}
+	|func_call {$$=$1;}
 	;
 expr:	
 	NUMBER { $$ = con($1); }
