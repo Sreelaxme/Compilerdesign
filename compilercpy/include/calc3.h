@@ -1,5 +1,6 @@
-typedef enum { typeCon,typeId, typeOpr } nodeEnum;
+typedef enum { typeCon,typeId, typeOpr,typeFun } nodeEnum;
 typedef enum {typeInt, typeNode,typeArr, unallocated} symTabEnum;
+typedef enum{Int,Bool,Void} retTypeEnum;
 /* constants */
 typedef struct {
     int value; /* value of constant */
@@ -14,6 +15,12 @@ typedef struct {
     int nops ;//no. of operands
     struct nodeTypeTag **op; /* operands */
 } oprNodeType;
+typedef struct{
+    retTypeEnum return_type;
+    struct nodeTypeTag* ret_node;
+    struct nodeTypeTag* fun_block;
+    struct sym *symTab;
+}funNodeType;
 
 typedef struct nodeTypeTag {
     nodeEnum type; /* type of node */
@@ -21,6 +28,7 @@ typedef struct nodeTypeTag {
         conNodeType con; /* constants */
         oprNodeType opr; /* operators */
         idNodeType id;
+        funNodeType fn;
     };
 } node;
 struct sym{
@@ -31,14 +39,20 @@ struct sym{
     union{
         int val;
         char * string;
-        node* nodeptr; 
+        node* nodeptr;
+        node* funcptr; 
     };
     int* int_ar;
 };
+//symtab for function
+
 extern struct sym symTab[100];
+extern struct sym *saveTab; //local symtab
 int symRead(char*);
 int getVal(char *);
 int update(char*,int);
 int declare(char*);
 
 // extern int sym[26]; 
+	extern int yylineno;
+	extern char* yytext;

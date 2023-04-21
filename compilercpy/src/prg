@@ -1,14 +1,15 @@
 decl
-integer x,y[2];
+integer x;
 enddecl 
+integer hi(){
+begin
+    print 123;
+    return 2;
+end
+}
 integer main() { 
 begin
-x=3;
-y[1]=3;
-y[0]=2;
-while (y[0]>0) do 
-write y[0];
-y[0] = 1-1; 
-endwhile ; 
+    x=hi();
+    write x;
 end 
 }

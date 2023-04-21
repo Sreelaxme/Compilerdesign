@@ -19,6 +19,7 @@ letter	[a-zA-Z]
 "enddecl" return ENDDECL;
 "integer" return INT;
 "void"	return VOID;
+"bool" return BOOL;
 if				{return IF;}
 then				{return THEN ;	}	
 else				{return ELSE ;	}	
@@ -30,6 +31,7 @@ begin {return Begin;}
 end {return End;}
 write {return PRINT;} 
 main {return MAIN ;}
+return {return RETURN;}
 {digit}+ {
 		yylval.iValue=atoi(yytext);
 		//printf("%s,%d\n",yytext,yylval);

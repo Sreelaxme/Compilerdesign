@@ -5,11 +5,14 @@
 #include <stdlib.h>
 node* getFn(char* str);
 
+node* evalF(funNodeType fn);
+
 int ex(node *p) {
 	 if (!p) return 0;
 	 switch(p->type) {
 		 case typeCon: /*printf("cons\n");*/return p->con.value;
 		 case typeId: return getVal(p->id.id);
+		 case typeFun: return evalF(p->fn);
 		 case typeOpr:
 			switch(p->opr.oper) {
 				case '+': return ex(p->opr.op[0]) + ex(p->opr.op[1]);
@@ -243,3 +246,14 @@ int update_arr(char * str, int ar_index, int value)
 	return 1;
 }
 
+//eval function
+
+node* evalF(funNodeType fn)
+{
+	retTypeEnum ret;
+	ex(fn.fun_block);
+	// struct sym oldSym = saveTab
+	// saveTab = fn.symTab;
+	
+	return ex(fn.ret_node);
+}

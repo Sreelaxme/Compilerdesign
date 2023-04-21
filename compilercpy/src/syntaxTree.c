@@ -13,28 +13,30 @@ void printSyntaxTree(node *p) {
 	return ;
  } 
  switch(p->type) {
- 	case typeCon: printf("NUM "); return ;
-	case typeId : printf("VAR "); return ;
+ 	case typeCon: printf("NUM "); printf("\n");return ;
+	case typeId : printf("VAR "); /*printf("\n")*/;return ;
  	case typeOpr:
  	switch(p->opr.oper) {
-		case '+': printf("PLUS (");printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]); printf(")"); return ;
-		case '-': printf("MINUS (");printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]); printf(")");return ;
-		case '*': printf("MUL (");printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]);printf(")");return ;
-		case '/': printf("DIV (");printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]); printf(")");return ;
-        case '<': printf("LESS (");printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]); printf(")");return ;
-        case '>': printf("GREATER (");printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]);printf(")");return ;
-        case '%': printf("MOD (");printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]);printf(")");return ;
-		case '=': printf("ASSIGN ("); printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]); printf(")"); return ;
-		case PRINT :  printf("PRINT ("); printSyntaxTree(p->opr.op[0]); printf(")"); return ;
-		case PRINT_List :  printf("PRINT ("); printSyntaxTree(p->opr.op[0]); printf(",");printSyntaxTree(p->opr.op[1]); printf(")"); return ;
+		case '+': printf("PLUS (");printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]); printf(")");printf("\n"); return ;
+		case '-': printf("MINUS (");printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]); printf(")");printf("\n");return ;
+		case '*': printf("MUL (");printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]);printf(")");printf("\n");return ;
+		case '/': printf("DIV (");printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]); printf(")");printf("\n");return ;
+        case '<': printf("LESS (");printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]); printf(")");printf("\n");return ;
+        case '>': printf("GREATER (");printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]);printf(")");printf("\n");return ;
+        case '%': printf("MOD (");printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]);printf(")");printf("\n");return ;
+		case '=': printf("ASSIGN ("); printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]); printf(")"); /*printf("\n");*/return ;
+		case PRINT :  printf("PRINT "); printSyntaxTree(p->opr.op[0]); /*printf(")");*/ printf("\n");return ;
+		case PRINT_List :  printf("PRINT ("); printSyntaxTree(p->opr.op[0]); printf(",");printSyntaxTree(p->opr.op[1]); printf(")"); printf("\n");return ;
 		case IF : 	{ 
 						printf("IF "); printSyntaxTree(p->opr.op[0]); printf("\n"); 
 						printSyntaxTree(p->opr.op[1]); printf("\nELSE ");
-						printSyntaxTree(p->opr.op[2]); printf("\nENDIF");return;
+						printSyntaxTree(p->opr.op[2]); printf("\nENDIF");
+						printf("\n");return;
 					}
 		case WHILE: {
 						printf("WHILE "); printSyntaxTree(p->opr.op[0]); 
 						printf("\n"); printSyntaxTree(p->opr.op[1]); printf("\nEND WHILE");
+						printf("\n");
 						return;
 				}
 		case DECLARE_List :  if(!decl)printf("DECL INT "); 
@@ -55,13 +57,13 @@ void printSyntaxTree(node *p) {
 							return ;
 		case DECLARE_Fn: printf("FUN INT %s\n",p->opr.op[0]->id.id);
 						printSyntaxTree(p->opr.op[1]);
-						printf("\nEND FUN\n");
+						printf("END FUN\n");
 						return ;
 		case Main: printf("\n");printf("FUN INT MAIN \n"); printSyntaxTree(p->opr.op[1]);
-							printf("\nEND MAIN\n"); 
+							printf("END MAIN\n"); 
 							return ;
 		case CALL : 
-					printf("FUN CALL %s\n", p->opr.op[0]);
+					printf("FUN CALL %s", p->opr.op[0]);
 					return ;
 		
         case GREATERTHANOREQUAL: printf("GREATERTHANOREQUAL "); printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]); printf(")"); return ;

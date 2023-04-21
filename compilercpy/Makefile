@@ -14,11 +14,11 @@ bin/y.tab.c : src/compiler.y
 clean :
 	rm -rf bin
 test : dir calculator
-	./bin/calc.out < src/1
+	./bin/calc.out < src/test
 test2: dir calculator
 	./bin/calc.out < src/prg 
 test1: dir calculator
-	./bin/calc.out < src/test
+	./bin/calc.out < src/1
 debug : bin/lex.yy.c bin/y.tab.c  bin/y.tab.h src/compiler.c
 		gcc -g bin/lex.yy.c bin/y.tab.c src/compiler.c src/syntaxTree.c -o bin/calc.out
 		gdb ./bin/calc.out

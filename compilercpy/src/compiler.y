@@ -18,6 +18,7 @@ struct sym symTab[100];
 int update_arr(char * str, int ar_index, int value);
 int declare_array(char* name,int size);
 node* getFn(char* str);
+node *fNode(node* list, retTypeEnum ret,node * expr);
 %}
 
 %union {
@@ -28,7 +29,7 @@ node* getFn(char* str);
 
 %token <iValue> NUMBER
 %token <str> VARIABLE MAIN
-%token INT VOID
+%token INT VOID BOOL
 %token DECL ENDDECL DECLARE STMNT DECLARE_List DECLARE_Fn CALL Main
 %token PRINT  PRINT_List Begin End 
 %token MAIN INDEX
@@ -38,6 +39,7 @@ node* getFn(char* str);
 %token LOGICAL_AND LOGICAL_NOT LOGICAL_OR
 %token READ WRITE
 %token ARRAY_DECLARE ARRAY_ASSIGN
+%token RETURN 
 
 %left '<' '>'
 %left EQUALEQUAL LESSTHANOREQUAL GREATERTHANOREQUAL NOTEQUAL
@@ -50,6 +52,7 @@ node* getFn(char* str);
 
 %type <nPtr> expr stmt varList pList Fdef stmt_list decl_stmt main array var
 %type <nPtr> func_call
+%type <iValue> return_type
 
 %%
 
@@ -68,7 +71,7 @@ node* getFn(char* str);
 
 
 program:
-	|program endl Fdef endl {printf("prgrm 1 \n"); printSyntaxTree($3); ex($3);}
+	|program endl Fdef endl {/*printf("prgrm 1 \n"*);*/ printSyntaxTree($3); ex($3);}
 	|program endl decl_stmt endl {printf("\n\nSYNTAX TREE\n"); printSyntaxTree($3); ex($3);}
 	|program endl main endl { /*printf("main\n");*/
 							printSyntaxTree($3);
@@ -79,21 +82,24 @@ program:
 	| program endl func_call endl {printSyntaxTree($3);ex($3);}
 	;
 return_type:
-	INT
-	|VOID 
+	INT {$$=Int;}
+	|VOID {$$ = Void;}
+	|BOOL  {$$ = Bool;}
 	;
 main:
-	return_type MAIN '(' ')' '{' endl Begin endl stmt_list endl End endl '}' {/*printf("found main\n");*/ $$ = opr(Main,2,id($2),$9);}
+	return_type MAIN '(' ')' '{' endl Begin endl stmt_list endl  End endl '}' 
+	{/*printf("found main\n");*/ $$ = opr(Main,2,id($2),$9);}
 	;
 endl:
 	|endl '\n'
 	;
 
 func_call:
-	 VARIABLE '(' ')' ';' { $$=opr(CALL,1,$1);}
+	 VARIABLE '(' ')'  { $$=opr(CALL,1,$1);}
 	;
 Fdef:
-	return_type VARIABLE '('  ')' '{' endl Begin endl stmt_list endl End endl '}'	{ /*printf("fdef\n");*/ $$ = opr(DECLARE_Fn,2,id($2),$9);	}
+	return_type VARIABLE '('  ')' '{' endl Begin endl stmt_list endl RETURN expr ';' endl End endl '}'	
+	{ /*printf("fdef\n");*/ $$ = opr(DECLARE_Fn,3,id($2),fNode($9,$1,$12));}
 	;
 varList:
 	| var {$$ = $1;}
@@ -114,6 +120,8 @@ stmt_list:
 		|	stmt endl stmt_list{$$ = opr(STMNT , 2, $1 ,$3) ;}
 		
 		|	error ';' 		{printf("error\n") ; $$ = con(0)  ;}
+		|
+		;
 
 decl_stmt:
 	DECL endl INT varList ';' endl ENDDECL  {/*printf("Global declaration \n"); */ $$=$4;}
@@ -128,7 +136,7 @@ stmt:
 	| IF expr THEN endl stmt_list endl ELSE endl stmt_list endl ENDIF ';' { /*printf("ifelse il keri\n") ;*/ $$ = opr(IF,3,$2,$5,$9);}
 	| WHILE expr DO endl stmt_list endl ENDWHILE ';' { /*printf("while il keri \n");*/ $$ = opr(WHILE,2,$2,$5);}
 	| VARIABLE{/*printf("evdeya\n");*/$$=$1;}
-	|func_call {$$=$1;}
+	|func_call ';'{$$=$1;}
 	;
 expr:	
 	NUMBER { $$ = con($1); }
@@ -149,6 +157,7 @@ expr:
 	|	LOGICAL_NOT expr	{ $$ = opr(LOGICAL_NOT, 1, $2);	}
 	|	expr LOGICAL_AND expr	{$$ = opr(LOGICAL_AND, 2, $1, $3);	}
 	|	expr LOGICAL_OR expr	{ $$ = opr(LOGICAL_OR, 2, $1, $3);	}
+	|func_call {$$=$1;}
 	;
 %%
 node *con(int value) {
@@ -189,6 +198,20 @@ node *opr(int oper, int nops, ...) {
 	//printf("opr\n");
 	return p;
 }
+node *fNode(node* list, retTypeEnum ret,node * expr)
+{
+	node *p;
+	if ((p = malloc(sizeof(node))) == NULL)
+		yyerror("out of memory");
+	
+	/* copy information */
+	struct sym* x =malloc(sizeof(struct sym));
+	p->type = typeFun;
+	p->fn.return_type = ret;
+	p->fn.fun_block = list;
+	p->fn.ret_node = expr;
+	return p;
+}
 void freeNode(node *p) {
 	int i;
 	if (!p) return;
@@ -201,7 +224,9 @@ void freeNode(node *p) {
 }
 	/* end of grammar */
 void yyerror(char *s) {
- fprintf(stdout, "%s\n", s);
+	 fprintf(stdout, "%s\n", s);
+	 fprintf(stdout,"linenumber %d\n", yylineno);
+	  fprintf(stdout,"token %s\n", yytext);
 }
 int main(void) {
  yyparse();
