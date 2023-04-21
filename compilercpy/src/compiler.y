@@ -12,7 +12,12 @@ void freeNode(node *p);
 int declareFn(char* name, node* ptr);
 node* getFn(char* str);
 int updateFunStat(char* str,node* ptr);
-//struct sym symTab[100];
+void printSyntaxTree(node* p);
+void printSymTab();
+struct sym symTab[100];
+int update_arr(char * str, int ar_index, int value);
+int declare_array(char* name,int size);
+node* getFn(char* str);
 %}
 
 %union {
@@ -22,13 +27,17 @@ int updateFunStat(char* str,node* ptr);
 };
 
 %token <iValue> NUMBER
-%token <str> VARIABLE
-%token PRINT DECL ENDDECL INT DECLARE STMNT DECLARE_List
+%token <str> VARIABLE MAIN
+%token INT VOID
+%token DECL ENDDECL DECLARE STMNT DECLARE_List DECLARE_Fn CALL Main
+%token PRINT  PRINT_List Begin End 
+%token MAIN INDEX
 %token IF THEN ELSE ENDIF
 %token DO WHILE ENDWHILE
 %token EQUALEQUAL LESSTHANOREQUAL GREATERTHANOREQUAL NOTEQUAL
 %token LOGICAL_AND LOGICAL_NOT LOGICAL_OR
-
+%token READ WRITE
+%token ARRAY_DECLARE ARRAY_ASSIGN
 
 %left '<' '>'
 %left EQUALEQUAL LESSTHANOREQUAL GREATERTHANOREQUAL NOTEQUAL
@@ -39,7 +48,9 @@ int updateFunStat(char* str,node* ptr);
 %left LOGICAL_NOT
 
 
-%type <nPtr> expr stmt varList pList Fdef stmt_list
+%type <nPtr> expr stmt varList pList Fdef stmt_list decl_stmt main array var
+%type <nPtr> func_call
+
 %%
 
 
@@ -48,47 +59,81 @@ int updateFunStat(char* str,node* ptr);
 // 	list stmt '\n'   {ex($2); freeNode($2);}
 // 	|
 // 	;
+// block:
+// 	| decl_stmt endl{ ex($1); }
+// 	| Fdef endl
+// 	| main endl { ex($1);}
+// 	|
+// 	;
+
+
 program:
-	|program func_call '\n'
-	| program Fdef '\n'
-	|
+	|program endl Fdef endl {printf("prgrm 1 \n"); printSyntaxTree($3); ex($3);}
+	|program endl decl_stmt endl {printf("\n\nSYNTAX TREE\n"); printSyntaxTree($3); ex($3);}
+	|program endl main endl { /*printf("main\n");*/
+							printSyntaxTree($3);
+							printf("\n\n\nPROGRAM OUTPUT \n"); 
+									ex($3);
+									printf("\nSymbol Table\n");
+									printSymTab();}
+	| program endl func_call endl {printSyntaxTree($3);ex($3);}
 	;
+return_type:
+	INT
+	|VOID 
+	;
+main:
+	return_type MAIN '(' ')' '{' endl Begin endl stmt_list endl End endl '}' {/*printf("found main\n");*/ $$ = opr(Main,2,id($2),$9);}
+	;
+endl:
+	|endl '\n'
+	;
+
 func_call:
-	 VARIABLE '(' ')' {node * n = getFn($1);ex(n);}
-	|
+	 VARIABLE '(' ')' ';' { $$=opr(CALL,1,$1);}
 	;
 Fdef:
-	VARIABLE '('  ')' '{'  stmt_list  '}'	{ declareFn($1,$5);	}
+	return_type VARIABLE '('  ')' '{' endl Begin endl stmt_list endl End endl '}'	{ /*printf("fdef\n");*/ $$ = opr(DECLARE_Fn,2,id($2),$9);	}
 	;
 varList:
-	VARIABLE  {printf("1 in varList\n");$$ = opr(DECLARE, 1, id($1));}
-	| varList ',' VARIABLE {printf("2 in VarList\n");$$ = opr(DECLARE_List, 2, id($3), $1);}
-	|
+	| var {$$ = $1;}
+	//| VARIABLE ',' varList {/*printf("2 in VarList\n");*/$$ = opr(DECLARE_List, 2, opr(DECLARE,1,id($1)), $3);}
+	| var ',' varList {$$ = opr(DECLARE_List,2,$1,$3);}
+
+var:
+	| VARIABLE '[' NUMBER ']' {$$ = opr(ARRAY_DECLARE,2,id($1),con($3));}
+	|VARIABLE  {/*printf("1 in varList\n");*/$$ = opr(DECLARE, 1, id($1));}
 	;
+
 pList:
-	expr {$$ = opr(PRINT, 1, ($1));}
-	| expr ',' pList {$$ = opr(PRINT, 2, $1, $3);}
-	|
+	expr {$$ = opr(PRINT, 1, $1);}
+	| expr ',' pList {$$ = opr(PRINT_List, 2, opr(PRINT,1,$1), $3);}
 	;
-stmt_list:	/* NULL */		{ $$ =con(0) ;}
-		| 	stmt {$$ = $1 ;}
-		|	stmt stmt_list	{$$ = opr(STMNT , 2, $1 ,$2) ;}
+stmt_list:	
+		stmt endl {$$ = $1 ;}
+		|	stmt endl stmt_list{$$ = opr(STMNT , 2, $1 ,$3) ;}
 		
 		|	error ';' 		{printf("error\n") ; $$ = con(0)  ;}
 
-
+decl_stmt:
+	DECL endl INT varList ';' endl ENDDECL  {/*printf("Global declaration \n"); */ $$=$4;}
+	;
 stmt:
-	expr ';' { $$=$1;/*printf("%d\n",ex($1));*/ }
-	| DECL '\n' INT varList ';' '\n' ENDDECL ';'{printf("declaration in .y \n"); $$=$4;}
-	| VARIABLE '=' expr ';'{printf("variable assignment\n");$$ = opr('=', 2, id($1), $3);}
+	expr ';' { $$=$1;}
+	| VARIABLE '[' expr ']' '=' expr ';' {$$ = opr(ARRAY_ASSIGN,3,id($1),$3,$6);}
+	| decl_stmt {$$ = $1;}
+	| VARIABLE '=' expr ';'{/*printf("variable assignment\n");*/$$ = opr('=', 2, id($1), $3);}
 						
-	| PRINT pList';' { printf("trying to print\n");$$ = $2;} 
-	| IF expr THEN stmt_list ELSE stmt_list ENDIF { printf("ifelse il keri\n") ; $$ = opr(IF,3,$2,$4,$6);}
-	| WHILE expr DO stmt_list ENDWHILE ';' { printf("while il keri \n"); $$ = opr(WHILE,2,$2,$4);}
+	| PRINT pList';' { /*printf("trying to print\n");*/ $$ = $2;} 
+	| IF expr THEN endl stmt_list endl ELSE endl stmt_list endl ENDIF ';' { /*printf("ifelse il keri\n") ;*/ $$ = opr(IF,3,$2,$5,$9);}
+	| WHILE expr DO endl stmt_list endl ENDWHILE ';' { /*printf("while il keri \n");*/ $$ = opr(WHILE,2,$2,$5);}
+	| VARIABLE{/*printf("evdeya\n");*/$$=$1;}
+	|func_call {$$=$1;}
 	;
 expr:	
 	NUMBER { $$ = con($1); }
-	|VARIABLE {$$ = con(getVal($1));}
+	|VARIABLE {/*printf("thaan evde ano?\n");*/$$ = id($1);}
+	| VARIABLE '[' expr ']' {$$ = opr(INDEX,2,id($1),$3);}
 	| expr '+' expr { $$ = opr('+', 2, $1, $3); }
 	| expr '-' expr { $$ = opr('-', 2, $1, $3); }
 	| expr '*' expr { $$ = opr('*', 2, $1, $3); }
@@ -120,6 +165,7 @@ node *id(char* var) {
 		yyerror("out of memory");
 	p->type = typeId; /*type is set*/
 	p->id.id = var; /*type is con and copied value to it*/
+	//printf("id\n");
 	return p;
 }
 node *opr(int oper, int nops, ...) {
@@ -140,7 +186,7 @@ node *opr(int oper, int nops, ...) {
 	for (i = 0; i < nops; i++)
 		p->opr.op[i] = va_arg(ap, node*);
 	va_end(ap);
-	
+	//printf("opr\n");
 	return p;
 }
 void freeNode(node *p) {

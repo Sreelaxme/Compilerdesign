@@ -1,0 +1,17 @@
+decl
+integer i,a,d;
+enddecl 
+
+integer sum(){
+    begin
+        print 1;
+    end
+}
+
+
+integer main(){
+begin   
+    print 123;
+    sum();
+end
+}

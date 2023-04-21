@@ -18,6 +18,7 @@ letter	[a-zA-Z]
 "decl" return DECL;
 "enddecl" return ENDDECL;
 "integer" return INT;
+"void"	return VOID;
 if				{return IF;}
 then				{return THEN ;	}	
 else				{return ELSE ;	}	
@@ -25,6 +26,10 @@ endif				{return ENDIF;}
 do				{return DO;}
 while 			{return WHILE;}
 endwhile 		{ return ENDWHILE ;}
+begin {return Begin;}
+end {return End;}
+write {return PRINT;} 
+main {return MAIN ;}
 {digit}+ {
 		yylval.iValue=atoi(yytext);
 		//printf("%s,%d\n",yytext,yylval);
@@ -62,6 +67,6 @@ return 1;
 
 
 
-// } 
+
 
 
