@@ -44,6 +44,15 @@ struct sym{
     };
     int* int_ar;
 };
+
+//type of arglist
+typedef struct {
+    retTypeEnum type;
+    char * name;
+    argListType *nect;
+}argListType;
+
+
 //symtab for function
 
 extern struct sym symTab[100];

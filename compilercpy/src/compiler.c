@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "../include/calc3.h"
+#include "../include/list.h"
 #include "../bin/y.tab.h"
 #include <string.h>
 #include <stdlib.h>

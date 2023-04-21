@@ -1,6 +1,7 @@
 %{
 #include <stdio.h>
 #include"../include/calc3.h"
+#include "../include/list.h"
 #include <stdarg.h>
 int yylex(void);
 void yyerror(char *s);
@@ -24,6 +25,7 @@ node *fNode(node* list, retTypeEnum ret,node * expr);
 %union {
 	int iValue;  /* integer value */
 	char* str;
+	argListType *argType;
 	node *nPtr; /* node pointer */
 };
 
@@ -53,7 +55,7 @@ node *fNode(node* list, retTypeEnum ret,node * expr);
 %type <nPtr> expr stmt varList pList Fdef stmt_list decl_stmt main array var
 %type <nPtr> func_call
 %type <iValue> return_type
-
+%typr <argType> arg_list
 %%
 
 
@@ -85,7 +87,7 @@ endl:
 	;
 
 func_call:
-	 VARIABLE '(' ')'  { $$=opr(CALL,1,$1);}
+	 VARIABLE '(' param_list ')'  { $$=opr(CALL,1,$1,$3);}
 	;
 Fdef:
 	return_type VARIABLE '('  arg_list ')' '{' endl Begin endl stmt_list endl RETURN expr ';' endl End endl '}'	
@@ -100,10 +102,17 @@ var:
 	| VARIABLE '[' NUMBER ']' {$$ = opr(ARRAY_DECLARE,2,id($1),con($3));}
 	|VARIABLE  {/*printf("1 in varList\n");*/$$ = opr(DECLARE, 1, id($1));}
 	;
+///////
 arg_list:
 	| return_type VARIABLE {}
 	| return_type VARIABLE ',' arg_list {}
 	;
+
+param_list:
+	| expr{}
+	| expr ',' param_list {}
+	;
+/////////////////
 pList:
 	expr {$$ = opr(PRINT, 1, $1);}
 	| expr ',' pList {$$ = opr(PRINT_List, 2, opr(PRINT,1,$1), $3);}
