@@ -57,17 +57,7 @@ node *fNode(node* list, retTypeEnum ret,node * expr);
 %%
 
 
-// list:	  /* Parser: Productions */
-	
-// 	list stmt '\n'   {ex($2); freeNode($2);}
-// 	|
-// 	;
-// block:
-// 	| decl_stmt endl{ ex($1); }
-// 	| Fdef endl
-// 	| main endl { ex($1);}
-// 	|
-// 	;
+
 
 
 program:
@@ -98,8 +88,8 @@ func_call:
 	 VARIABLE '(' ')'  { $$=opr(CALL,1,$1);}
 	;
 Fdef:
-	return_type VARIABLE '('  ')' '{' endl Begin endl stmt_list endl RETURN expr ';' endl End endl '}'	
-	{ /*printf("fdef\n");*/ $$ = opr(DECLARE_Fn,3,id($2),fNode($9,$1,$12));}
+	return_type VARIABLE '('  arg_list ')' '{' endl Begin endl stmt_list endl RETURN expr ';' endl End endl '}'	
+	{ /*printf("fdef\n");*/ $$ = opr(DECLARE_Fn,3,id($2),fNode($10,$1,$13,$4));}
 	;
 varList:
 	| var {$$ = $1;}
@@ -110,7 +100,10 @@ var:
 	| VARIABLE '[' NUMBER ']' {$$ = opr(ARRAY_DECLARE,2,id($1),con($3));}
 	|VARIABLE  {/*printf("1 in varList\n");*/$$ = opr(DECLARE, 1, id($1));}
 	;
-
+arg_list:
+	| return_type VARIABLE {}
+	| return_type VARIABLE ',' arg_list {}
+	;
 pList:
 	expr {$$ = opr(PRINT, 1, $1);}
 	| expr ',' pList {$$ = opr(PRINT_List, 2, opr(PRINT,1,$1), $3);}
