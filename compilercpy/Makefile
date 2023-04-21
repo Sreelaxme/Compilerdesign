@@ -5,7 +5,7 @@ build : calculator
 dir : 
 	mkdir -p bin
 calculator: bin/lex.yy.c bin/y.tab.c 
-	gcc bin/lex.yy.c bin/y.tab.c src/compiler.c -o bin/calc.out
+	gcc bin/lex.yy.c bin/y.tab.c src/compiler.c src/syntaxTree.c -o bin/calc.out
 bin/lex.yy.c : bin/y.tab.c src/compiler.l
 	lex -t src/compiler.l > bin/lex.yy.c
 bin/y.tab.c : src/compiler.y
@@ -20,7 +20,7 @@ test2: dir calculator
 test1: dir calculator
 	./bin/calc.out < src/test
 debug : bin/lex.yy.c bin/y.tab.c  bin/y.tab.h src/compiler.c
-		gcc -g bin/lex.yy.c bin/y.tab.c src/compiler.c -o bin/calc.out
+		gcc -g bin/lex.yy.c bin/y.tab.c src/compiler.c src/syntaxTree.c -o bin/calc.out
 		gdb ./bin/calc.out
 	
 %.c: %.y
