@@ -55,7 +55,7 @@ node *fNode(node* list, retTypeEnum ret,node * expr);
 %type <nPtr> expr stmt varList pList Fdef stmt_list decl_stmt main array var
 %type <nPtr> func_call
 %type <iValue> return_type
-%typr <argType> arg_list
+%type <argType> arg_list
 %%
 
 
