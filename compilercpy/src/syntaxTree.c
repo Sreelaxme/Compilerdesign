@@ -57,7 +57,7 @@ void printSyntaxTree(node *p) {
 							return ;
 		case DECLARE_Fn: printf("FUN INT %s\n",p->opr.op[0]->id.id);
 						printSyntaxTree(p->opr.op[1]);
-						printf("END FUN\n");
+						//printf("END FUN\n");
 						return ;
 		case Main: printf("\n");printf("FUN INT MAIN \n"); printSyntaxTree(p->opr.op[1]);
 							printf("END MAIN\n"); 

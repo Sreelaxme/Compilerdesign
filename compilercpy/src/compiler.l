@@ -49,6 +49,7 @@ return {return RETURN;}
 AND				{return LOGICAL_AND ;	}	
 OR				{return LOGICAL_OR ;}
 NOT			{return LOGICAL_NOT ;}
+"//".* ;
 [-+*/=()><;,\{\}\[\]\%\n] {
  					return *yytext;
  }

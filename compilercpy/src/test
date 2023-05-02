@@ -5,9 +5,10 @@ enddecl
 integer sum(){
     begin
         print 1;
+        return 1 ;
     end
-}
 
+}
 
 integer main(){
 begin   

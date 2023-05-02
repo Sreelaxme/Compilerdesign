@@ -1,10 +1,9 @@
 %{
 #include <stdio.h>
 #include"../include/calc3.h"
-#include "../include/list.h"
 #include <stdarg.h>
 int yylex(void);
-void yyerror(char *s);
+void yyerror(char *);
 node *opr(int oper, int nops, ...);
 node *con(int value);
 node *id(char* var);
@@ -19,7 +18,16 @@ struct sym symTab[100];
 int update_arr(char * str, int ar_index, int value);
 int declare_array(char* name,int size);
 node* getFn(char* str);
-node *fNode(node* list, retTypeEnum ret,node * expr);
+node *fNode(node* list, retTypeEnum ret,node * expr,argListType *argList);
+argListType* singletonArg(retTypeEnum ret, char* var);
+argListType *listArg(retTypeEnum ret, char* var, argListType *old);
+int lengthOfArgList(argListType *list);
+nodeItemtype* singletonPara(node * Node);
+nodeItemtype *listPara(node * Node, nodeItemtype *list);
+int lengthOfParaList(nodeItemtype *list);
+varItemtype* singletonVar(char* name, int length);
+varItemtype *listVar(varItemtype *item , varItemtype * list );
+int lengthOfVarList(varItemtype *list);
 %}
 
 %union {
@@ -27,15 +35,19 @@ node *fNode(node* list, retTypeEnum ret,node * expr);
 	char* str;
 	argListType *argType;
 	node *nPtr; /* node pointer */
+	argListType *argList;
+	nodeItemtype *paramList;
+	varItemtype *varList;
+
 };
 
 %token <iValue> NUMBER
-%token <str> VARIABLE MAIN
+%token <str> VARIABLE 
 %token INT VOID BOOL
-%token DECL ENDDECL DECLARE STMNT DECLARE_List DECLARE_Fn CALL Main
+%token DECL ENDDECL DECLARE_L DECLARE DECLARE_G STMNT DECLARE_List DECLARE_Fn CALL Main
 %token PRINT  PRINT_List Begin End 
 %token MAIN INDEX
-%token IF THEN ELSE ENDIF
+%token IF THEN ELSE ENDIF IFL
 %token DO WHILE ENDWHILE
 %token EQUALEQUAL LESSTHANOREQUAL GREATERTHANOREQUAL NOTEQUAL
 %token LOGICAL_AND LOGICAL_NOT LOGICAL_OR
@@ -52,10 +64,12 @@ node *fNode(node* list, retTypeEnum ret,node * expr);
 %left LOGICAL_NOT
 
 
-%type <nPtr> expr stmt varList pList Fdef stmt_list decl_stmt main array var
-%type <nPtr> func_call
+%type <nPtr> expr stmt pList Fdef stmt_list decl_stmt_l decl_stmt_g main 
+%type <nPtr> func_call MAIN
 %type <iValue> return_type
-%type <argType> arg_list
+%type <argList> arg_list
+%type <paramList> param_list
+%type <varList> varList var
 %%
 
 
@@ -64,7 +78,6 @@ node *fNode(node* list, retTypeEnum ret,node * expr);
 
 program:
 	|program endl Fdef endl {/*printf("prgrm 1 \n"*);*/ printSyntaxTree($3); ex($3);}
-	|program endl decl_stmt endl {printf("\n\nSYNTAX TREE\n"); printSyntaxTree($3); ex($3);}
 	|program endl main endl { /*printf("main\n");*/
 							printSyntaxTree($3);
 							printf("\n\n\nPROGRAM OUTPUT \n"); 
@@ -72,6 +85,7 @@ program:
 									printf("\nSymbol Table\n");
 									printSymTab();}
 	| program endl func_call endl {printSyntaxTree($3);ex($3);}
+	| program endl decl_stmt_g endl {printf("\n\nSYNTAX TREE\n"); printSyntaxTree($3); ex($3);printSymTab();}
 	;
 return_type:
 	INT {$$=Int;}
@@ -79,38 +93,42 @@ return_type:
 	|BOOL  {$$ = Bool;}
 	;
 main:
-	return_type MAIN '(' ')' '{' endl Begin endl stmt_list endl  End endl '}' 
-	{/*printf("found main\n");*/ $$ = opr(Main,2,id($2),$9);}
+	INT MAIN '(' ')' endl '{' endl Begin endl stmt_list endl  End endl '}' 
+	//{/*printf("found main\n");*/ $$ = opr(Main,2,id($2),$10);}
+	{ $$ = opr(Main,1,$10) ;}
 	;
 endl:
 	|endl '\n'
 	;
 
 func_call:
-	 VARIABLE '(' param_list ')'  { $$=opr(CALL,1,$1,$3);}
+	 VARIABLE '(' param_list ')'  { $$=opr(CALL,2,$1,$3);}
 	;
 Fdef:
-	return_type VARIABLE '('  arg_list ')' '{' endl Begin endl stmt_list endl RETURN expr ';' endl End endl '}'	
-	{ /*printf("fdef\n");*/ $$ = opr(DECLARE_Fn,3,id($2),fNode($10,$1,$13,$4));}
+	return_type VARIABLE '('  arg_list ')' endl '{' endl Begin endl stmt_list endl RETURN expr ';' endl End endl '}' endl	
+	{  $$ = opr(DECLARE_Fn,2,$2,fNode($11,$1,$14,$4));}
 	;
+//why not creating a node??
 varList:
 	| var {$$ = $1;}
 	//| VARIABLE ',' varList {/*printf("2 in VarList\n");*/$$ = opr(DECLARE_List, 2, opr(DECLARE,1,id($1)), $3);}
-	| var ',' varList {$$ = opr(DECLARE_List,2,$1,$3);}
+	| var ',' varList {$$ = listVar($1,$3);}
 
 var:
-	| VARIABLE '[' NUMBER ']' {$$ = opr(ARRAY_DECLARE,2,id($1),con($3));}
-	|VARIABLE  {/*printf("1 in varList\n");*/$$ = opr(DECLARE, 1, id($1));}
+	| VARIABLE '[' NUMBER ']' {$$ = singletonVar($1,$3);}
+	|VARIABLE  {/*printf("1 in varList\n");*/$$ = singletonVar($1,0);}
 	;
 ///////
 arg_list:
-	| return_type VARIABLE {}
-	| return_type VARIABLE ',' arg_list {}
+	 {$$ =NULL;}
+	| return_type VARIABLE {$$ = singletonArg($1,$2);}
+	| return_type VARIABLE ',' arg_list { $$ = listArg($1,$2,$4);}
 	;
 
 param_list:
-	| expr{}
-	| expr ',' param_list {}
+	 {$$ = NULL;}
+	| expr{$$ = singletonPara($1);}
+	| expr ',' param_list {$$ = listPara($1,$3);}
 	;
 /////////////////
 pList:
@@ -124,18 +142,22 @@ stmt_list:
 		|	error ';' 		{printf("error\n") ; $$ = con(0)  ;}
 		|
 		;
-
-decl_stmt:
-	DECL endl INT varList ';' endl ENDDECL  {/*printf("Global declaration \n"); */ $$=$4;}
+/////////////////////////////////GLOBAL DECLARATIONS/////////////////////////////
+decl_stmt_g: 
+	DECL endl INT varList ';' endl ENDDECL  { $$=opr(DECLARE_G,1,$4);}
 	;
+///////////////////////////////LOCAL//////////////////////////
+decl_stmt_l:
+	DECL endl INT varList ';' endl ENDDECL  {$$ = opr(DECLARE_L,1,$4);}
 stmt:
 	expr ';' { $$=$1;}
 	| VARIABLE '[' expr ']' '=' expr ';' {$$ = opr(ARRAY_ASSIGN,3,id($1),$3,$6);}
-	| decl_stmt {$$ = $1;}
+	| decl_stmt_l {$$ = $1;}
 	| VARIABLE '=' expr ';'{/*printf("variable assignment\n");*/$$ = opr('=', 2, id($1), $3);}
 						
 	| PRINT pList';' { /*printf("trying to print\n");*/ $$ = $2;} 
-	| IF expr THEN endl stmt_list endl ELSE endl stmt_list endl ENDIF ';' { /*printf("ifelse il keri\n") ;*/ $$ = opr(IF,3,$2,$5,$9);}
+	| IF expr endl THEN endl stmt_list endl ELSE endl stmt_list endl ENDIF ';' { /*printf("ifelse il keri\n") ;*/ $$ = opr(IF,3,$2,$6,$10);}
+	| IF expr endl THEN endl stmt_list endl  ENDIF ';' {  $$ = opr(IFL,2,$2,$6);}
 	| WHILE expr DO endl stmt_list endl ENDWHILE ';' { /*printf("while il keri \n");*/ $$ = opr(WHILE,2,$2,$5);}
 	| VARIABLE{/*printf("evdeya\n");*/$$=$1;}
 	|func_call ';'{$$=$1;}
@@ -200,18 +222,37 @@ node *opr(int oper, int nops, ...) {
 	//printf("opr\n");
 	return p;
 }
-node *fNode(node* list, retTypeEnum ret,node * expr)
+node *fNode(node* list, retTypeEnum ret,node * expr,argListType *argList)
 {
 	node *p;
 	if ((p = malloc(sizeof(node))) == NULL)
 		yyerror("out of memory");
 	
+	int n = lengthOfArgList(argList);
+	if((p->fn.symTab = malloc(sizeof(symTab)*SYM_L))==NULL)
+		yyerror("out of memory");
 	/* copy information */
-	struct sym* x =malloc(sizeof(struct sym));
+	
 	p->type = typeFun;
 	p->fn.return_type = ret;
 	p->fn.fun_block = list;
 	p->fn.ret_node = expr;
+	p->fn.n_args = n;
+
+	argListType * ptr = argList;
+	int i =0;
+	while(ptr!=NULL)
+	{
+		p->fn.symTab[i].name=ptr->name;
+		if(ptr->type == Int)
+		{
+			p->fn.symTab[i].type == typeInt;
+		}
+		p->fn.symTab[i].declared = 1;
+		p->fn.symTab[i].allocated = 1;
+		i++;
+		ptr = ptr -> next;
+	}
 	return p;
 }
 void freeNode(node *p) {

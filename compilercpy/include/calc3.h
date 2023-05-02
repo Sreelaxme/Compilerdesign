@@ -1,25 +1,34 @@
+#define SYM_G 100
+#define SYM_L 25
+
 typedef enum { typeCon,typeId, typeOpr,typeFun } nodeEnum;
 typedef enum {typeInt, typeNode,typeArr, unallocated} symTabEnum;
 typedef enum{Int,Bool,Void} retTypeEnum;
+
+
 /* constants */
 typedef struct {
     int value; /* value of constant */
 } conNodeType;
+
 /* identifiers */
 typedef struct {
     char* id; /* subscript to sym array */
 } idNodeType; 
+
 /* operators */
 typedef struct {
     int oper; /* operator */
     int nops ;//no. of operands
     struct nodeTypeTag **op; /* operands */
 } oprNodeType;
+
 typedef struct{
     retTypeEnum return_type;
-    struct nodeTypeTag* ret_node;
-    struct nodeTypeTag* fun_block;
+    struct node * ret_node;
+    struct node * fun_block;
     struct sym *symTab;
+    int n_args;
 }funNodeType;
 
 typedef struct nodeTypeTag {
@@ -31,6 +40,8 @@ typedef struct nodeTypeTag {
         funNodeType fn;
     };
 } node;
+
+//symtab
 struct sym{
     char* name;
     int allocated;
@@ -41,16 +52,37 @@ struct sym{
         char * string;
         node* nodeptr;
         node* funcptr; 
+        int* int_ar;
     };
-    int* int_ar;
 };
+//changed int_ar inside union
 
 //type of arglist
-typedef struct {
+typedef struct arg_list{
     retTypeEnum type;
     char * name;
-    argListType *nect;
+    struct arg_list *next;
 }argListType;
+
+///////////////////////
+typedef struct node_item{
+    node * node_ptr;
+    struct node_item *next;
+    
+}nodeItemtype;
+
+typedef struct var_item
+{
+   char * name;
+   int length;
+   struct var_item *next;
+}varItemtype;
+
+///////////////////////
+
+
+
+
 
 
 //symtab for function
