@@ -19,3 +19,31 @@ begin
 	
 end
 }
+
+
+integer ife(integer a ){
+    decl
+    integer b;
+    enddecl
+    begin
+    b = 2;
+    if a==b then
+        print 1;
+    else 
+        print 0 ;
+    endif;
+    return 1;
+    end
+    
+}
+
+integer main(){
+    decl 
+    integer a;
+    enddecl
+    begin
+    a = 1 ;
+    ife(a);
+    return 1;
+    end
+}

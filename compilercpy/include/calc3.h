@@ -27,7 +27,9 @@ typedef struct{
     retTypeEnum return_type;
     struct node * ret_node;
     struct node * fun_block;
-    struct sym *symTab;
+    struct node* decl;
+    struct arg_list *arg_list;
+    
     int n_args;
 }funNodeType;
 
@@ -62,6 +64,7 @@ typedef struct arg_list{
     retTypeEnum type;
     char * name;
     struct arg_list *next;
+    int val;
 }argListType;
 
 ///////////////////////

@@ -18,7 +18,7 @@ struct sym symTab[100];
 int update_arr(char * str, int ar_index, int value);
 int declare_array(char* name,int size);
 node* getFn(char* str);
-node *fNode(node* list, retTypeEnum ret,node * expr,argListType *argList);
+
 argListType* singletonArg(retTypeEnum ret, char* var);
 argListType *listArg(retTypeEnum ret, char* var, argListType *old);
 int lengthOfArgList(argListType *list);
@@ -29,6 +29,7 @@ varItemtype* singletonVar(char* name, int length);
 varItemtype *listVar(varItemtype *item , varItemtype * list );
 int lengthOfVarList(varItemtype *list);
 
+node *fNode(node* list, retTypeEnum ret,node * expr,argListType *argList, node * decl);
 
 extern struct sym *saveTab;
 extern struct sym symTab[100];
@@ -85,12 +86,12 @@ extern struct sym symTab[100];
 program:
 	|program endl Fdef endl {/*printf("prgrm 1 \n"*);*/ printSyntaxTree($3); ex($3);}
 	|program endl main endl { /*printf("main\n");*/
-							printSyntaxTree($3);
+							//printSyntaxTree($3);
 							printf("\n\n\nPROGRAM OUTPUT \n"); 
 									ex($3);
 									printf("\nSymbol Table\n");
 									printSymTab();}
-	| program endl func_call endl {printSyntaxTree($3);ex($3);}
+	| program endl func_call endl {/*printSyntaxTree($3);*/ ex($3);}
 	| program endl decl_stmt_g endl {printf("\n\nSYNTAX TREE\n"); printSyntaxTree($3); ex($3);printSymTab();}
 	;
 return_type:
@@ -99,9 +100,9 @@ return_type:
 	|BOOL  {$$ = Bool;}
 	;
 main:
-	INT MAIN '(' ')' endl '{' endl Begin endl stmt_list endl  End endl '}' 
+	return_type MAIN '(' ')' endl '{' endl decl_stmt_l endl Begin endl stmt_list endl RETURN expr ';' endl End endl '}' endl 
 	//{/*printf("found main\n");*/ $$ = opr(Main,2,id($2),$10);}
-	{ $$ = opr(Main,1,$10) ;}
+	{ $$ = opr(Main,1,fNode($12,$1,$15,NULL,$8)) ;}
 	;
 endl:
 	|endl '\n'
@@ -111,8 +112,8 @@ func_call:
 	 VARIABLE '(' param_list ')'  { $$=opr(CALL,2,$1,$3);}
 	;
 Fdef:
-	return_type VARIABLE '('  arg_list ')' endl '{' endl Begin endl stmt_list endl RETURN expr ';' endl End endl '}' endl	
-	{  $$ = opr(DECLARE_Fn,2,$2,fNode($11,$1,$14,$4));}
+	return_type VARIABLE '('  arg_list ')' endl '{' endl decl_stmt_l endl Begin endl stmt_list endl RETURN expr ';' endl End endl '}' endl	
+	{  $$ = opr(DECLARE_Fn,2,$2,fNode($13,$1,$16,$4,$9));}
 	;
 //why not creating a node??
 varList:
@@ -154,7 +155,7 @@ decl_stmt_g:
 	;
 ///////////////////////////////LOCAL//////////////////////////
 decl_stmt_l:
-	DECL endl INT varList ';' endl ENDDECL  {$$ = opr(DECLARE_L,1,$4);}
+	DECL endl return_type varList ';' endl ENDDECL  {$$ = opr(DECLARE_L,1,$4);}
 stmt:
 	expr ';' { $$=$1;}
 	| VARIABLE '[' expr ']' '=' expr ';' {$$ = opr(ARRAY_ASSIGN,3,id($1),$3,$6);}
@@ -163,7 +164,7 @@ stmt:
 						
 	| PRINT pList';' { /*printf("trying to print\n");*/ $$ = $2;} 
 	| IF expr endl THEN endl stmt_list endl ELSE endl stmt_list endl ENDIF ';' { /*printf("ifelse il keri\n") ;*/ $$ = opr(IF,3,$2,$6,$10);}
-	| IF expr endl THEN endl stmt_list endl  ENDIF ';' {  $$ = opr(IFL,2,$2,$6);}
+	| IF expr endl THEN endl stmt_list endl  ENDIF ';' {  printf("haii\n"); $$ = opr(IFL,2,$2,$6);}
 	| WHILE expr DO endl stmt_list endl ENDWHILE ';' { /*printf("while il keri \n");*/ $$ = opr(WHILE,2,$2,$5);}
 	| VARIABLE{/*printf("evdeya\n");*/$$=$1;}
 	|func_call ';'{$$=$1;}
@@ -228,15 +229,15 @@ node *opr(int oper, int nops, ...) {
 	//printf("opr\n");
 	return p;
 }
-node *fNode(node* list, retTypeEnum ret,node * expr,argListType *argList)
+node *fNode(node* list, retTypeEnum ret,node * expr,argListType *argList, node * decl)
 {
 	node *p;
 	if ((p = malloc(sizeof(node))) == NULL)
 		yyerror("out of memory");
 	
 	int n = lengthOfArgList(argList);
-	if((p->fn.symTab = malloc(sizeof(symTab)*SYM_L))==NULL)
-		yyerror("out of memory");
+	// if((p->fn.symTab = malloc(sizeof(symTab)*SYM_L))==NULL)
+	// 	yyerror("out of memory");
 	/* copy information */
 	
 	p->type = typeFun;
@@ -244,21 +245,23 @@ node *fNode(node* list, retTypeEnum ret,node * expr,argListType *argList)
 	p->fn.fun_block = list;
 	p->fn.ret_node = expr;
 	p->fn.n_args = n;
+	p->fn.arg_list = argList;
+	p->fn.decl=decl;
 
-	argListType * ptr = argList;
-	int i =0;
-	while(ptr!=NULL)
-	{
-		p->fn.symTab[i].name=ptr->name;
-		if(ptr->type == Int)
-		{
-			p->fn.symTab[i].type == typeInt;
-		}
-		p->fn.symTab[i].declared = 1;
-		p->fn.symTab[i].allocated = 1;
-		i++;
-		ptr = ptr -> next;
-	}
+	// argListType * ptr = argList;
+	// int i =0;
+	// while(ptr!=NULL)
+	// {
+	// 	p->fn.symTab[i].name=ptr->name;
+	// 	if(ptr->type == Int)
+	// 	{
+	// 		p->fn.symTab[i].type == typeInt;
+	// 	}
+	// 	p->fn.symTab[i].declared = 1;
+	// 	p->fn.symTab[i].allocated = 1;
+	// 	i++;
+	// 	ptr = ptr -> next;
+	// }
 	return p;
 }
 void freeNode(node *p) {

@@ -14,9 +14,9 @@ char *passParameters(node *fNode, struct node_item *list);
 
 int ex(node *p)
 {
-	if (!p || p == __UINTPTR_MAX__)
+	if (!p)
 	{
-		printError("SIGSEV", 0, p);
+		//printError("SIGSEV", 0, p);
 		return 0;
 	}
 	switch (p->type)
@@ -70,7 +70,7 @@ int ex(node *p)
 				return ex(p->opr.op[1]);
 			}
 			else
-				return;
+				return 0;
 		case WHILE:
 		{
 			// printf("c file il ah njn epo\n");
@@ -120,7 +120,8 @@ int ex(node *p)
 			}
 		}
 		case Main: 
-			ex(p->opr.op[0]);
+			declareFn("MAIN",p->opr.op[0]);
+			return ex(p->opr.op[0]);
 
 			return 0;
 
@@ -131,7 +132,7 @@ int ex(node *p)
 		case NOTEQUAL:
 			return ex(p->opr.op[0]) != ex(p->opr.op[1]);
 		case EQUALEQUAL:
-			return ex(p->opr.op[0]) == ex(p->opr.op[1]);
+			return (ex(p->opr.op[0]) == ex(p->opr.op[1]));
 		case LOGICAL_NOT:
 			return !(ex(p->opr.op[0]));
 		case LOGICAL_AND:
@@ -353,12 +354,33 @@ int update_arr(char *str, int ar_index, int value)
 node *evalF(funNodeType fn)
 {
 	struct sym *oldSym = saveTab;
-	saveTab = fn.symTab;
-	retTypeEnum ret;
+	saveTab=malloc(sizeof(struct sym)*25);
+	// saveTab = fn.symTab;
+	// retTypeEnum ret;
+	// ex(fn.fun_block);
+	
+	if(saveTab == NULL)
+		yyerror("Out of mem");
+	argListType * ptr = fn.arg_list;
+	int i = 0;
+	while (ptr!=NULL)
+	{
+		saveTab[i].name = ptr->name;
+		if(ptr->type == Int)
+			saveTab[i].type = typeInt;
+		saveTab[i].declared=1;
+		saveTab[i].allocated = 1;
+		saveTab[i].val = ptr->val;
+		i++;
+		ptr=ptr->next;
+	}
+	ex(fn.decl);
 	ex(fn.fun_block);
+
 	int result = ex(fn.ret_node);
 	saveTab = oldSym;
 	return result;
+	
 }
 
 ///////////////////////////////////////////
@@ -506,11 +528,13 @@ char *passParameters(node *fNode, struct node_item *list)
 	}
 	int i = 0;
 	nodeItemtype *ptr = list;
+	argListType * a = fNode->fn.arg_list;
 	while (ptr != NULL)
 	{
-		fNode->fn.symTab[i].val = ex(ptr->node_ptr);
-		fNode->fn.symTab[i].declared = 1;
-		i++;
+		a->val = ex(ptr->node_ptr);
+		// fNode->fn.symTab[i].declared = 1;
+		// i++;
+		a = a->next;
 		ptr = ptr->next;
 	}
 	return "done";
