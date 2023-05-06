@@ -32,7 +32,7 @@ argListType *listArg(retTypeEnum ret, char* var, argListType *old)
     }
     p->next = ptr;
 
-    return ptr;
+    return old;
 }
 
 int lengthOfArgList(argListType *list)
@@ -72,7 +72,7 @@ nodeItemtype *listPara(node * Node, nodeItemtype *list)
     }
     p->next = ptr;
 
-    return ptr;
+    return list;
 }
 
 int lengthOfParaList(nodeItemtype *list)

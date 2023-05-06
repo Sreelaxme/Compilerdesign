@@ -2,17 +2,20 @@ decl
 integer i,a,d;
 enddecl 
 
-integer sum(){
+integer sum(integer a , integer b,integer c){
     begin
-        print 1;
+        print a+b+c;
         return 1 ;
     end
 
 }
 
 integer main(){
-begin   
-    print 123;
-    sum();
+begin 
+    a = 2;
+    d = 4;
+    i = 3;
+    print a ,d,i;
+    sum(a,d,i);
 end
 }

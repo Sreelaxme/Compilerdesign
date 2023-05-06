@@ -28,7 +28,13 @@ int lengthOfParaList(nodeItemtype *list);
 varItemtype* singletonVar(char* name, int length);
 varItemtype *listVar(varItemtype *item , varItemtype * list );
 int lengthOfVarList(varItemtype *list);
+
+
+extern struct sym *saveTab;
+extern struct sym symTab[100];
 %}
+
+
 
 %union {
 	int iValue;  /* integer value */

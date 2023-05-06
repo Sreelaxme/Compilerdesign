@@ -472,9 +472,9 @@ int declareL(char *name, int size)
 	char *newName = strdup(name);
 
 	int i;
-	for (i = 0; i < SYM_L && saveTab[i].declared; i++)
+	for (i = 0; i < SYM_G && saveTab[i].declared; i++)
 	{
-		if (strcmp(symTab[i].name, newName) == 0)
+		if (strcmp(saveTab[i].name, newName) == 0)
 			return i;
 	}
 	if (i >= 100)
