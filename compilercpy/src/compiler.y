@@ -12,7 +12,7 @@ void freeNode(node *p);
 int declareFn(char* name, node* ptr);
 node* getFn(char* str);
 int updateFunStat(char* str,node* ptr);
-void printSyntaxTree(node* p);
+void printSyntaxTree(node* );
 void printSymTab();
 struct sym symTab[100];
 int update_arr(char * str, int ar_index, int value);
@@ -30,6 +30,7 @@ varItemtype *listVar(varItemtype *item , varItemtype * list );
 int lengthOfVarList(varItemtype *list);
 
 node *fNode(node* list, retTypeEnum ret,node * expr,argListType *argList, node * decl);
+argListType * singlelineArg(varItemtype * l1,varItemtype *l2);
 
 extern struct sym *saveTab;
 extern struct sym symTab[100];
@@ -72,7 +73,7 @@ extern struct sym symTab[100];
 
 
 %type <nPtr> expr stmt pList Fdef stmt_list decl_stmt_l decl_stmt_g main 
-%type <nPtr> func_call MAIN
+%type <nPtr> func_call MAIN decl_line
 %type <iValue> return_type
 %type <argList> arg_list
 %type <paramList> param_list
@@ -84,7 +85,7 @@ extern struct sym symTab[100];
 
 
 program:
-	|program endl Fdef endl {/*printf("prgrm 1 \n"*);*/ printSyntaxTree($3); ex($3);}
+	|program endl Fdef endl {/*printf("prgrm 1 \n"*);printSyntaxTree($3); */ ex($3);}
 	|program endl main endl { /*printf("main\n");*/
 							//printSyntaxTree($3);
 							printf("\n\n\nPROGRAM OUTPUT \n"); 
@@ -92,7 +93,7 @@ program:
 									printf("\nSymbol Table\n");
 									printSymTab();}
 	| program endl func_call endl {/*printSyntaxTree($3);*/ ex($3);}
-	| program endl decl_stmt_g endl {printf("\n\nSYNTAX TREE\n"); printSyntaxTree($3); ex($3);printSymTab();}
+	| program endl decl_stmt_g endl {printf("\n\nSYNTAX TREE\n"); /*printSyntaxTree($3); */ex($3);printSymTab();}
 	;
 return_type:
 	INT {$$=Int;}
@@ -150,12 +151,18 @@ stmt_list:
 		|
 		;
 /////////////////////////////////GLOBAL DECLARATIONS/////////////////////////////
+decl_line:
+	{$$ = NULL;}
+	| INT varList ';' endl {$$ = $2;}
+	| INT varList ';' endl decl_line endl {$$ = singlelineArg($2,$5);}
+	| INT VARIABLE '(' arg_list ')' ';' endl decl_line endl {$$ = $8;}
+	;
 decl_stmt_g: 
-	DECL endl INT varList ';' endl ENDDECL  { $$=opr(DECLARE_G,1,$4);}
+	DECL endl decl_line endl ENDDECL  { $$=opr(DECLARE_G,1,$3);}
 	;
 ///////////////////////////////LOCAL//////////////////////////
 decl_stmt_l:
-	DECL endl return_type varList ';' endl ENDDECL  {$$ = opr(DECLARE_L,1,$4);}
+	DECL endl decl_line endl ENDDECL  {$$ = opr(DECLARE_L,1,$3);}
 stmt:
 	expr ';' { $$=$1;}
 	| VARIABLE '[' expr ']' '=' expr ';' {$$ = opr(ARRAY_ASSIGN,3,id($1),$3,$6);}
@@ -274,12 +281,25 @@ void freeNode(node *p) {
  	}
  	free (p);
 }
+argListType * singlelineArg(varItemtype * l1,varItemtype *l2)
+{
+	if(!l1) return l2;
+	if(!l2) return l1;
+	varItemtype * curr = l1;
+	while(curr->next!=NULL)
+	{
+		curr=curr->next;
+	}
+	curr->next = l2;
+	return l1;
+}
 	/* end of grammar */
 void yyerror(char *s) {
 	 fprintf(stdout, "%s\n", s);
 	 fprintf(stdout,"linenumber %d\n", yylineno);
 	  fprintf(stdout,"token %s\n", yytext);
 }
+
 int main(void) {
  yyparse();
  return 0;

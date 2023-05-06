@@ -47,3 +47,40 @@ integer main(){
     return 1;
     end
 }
+
+decl
+integer i,a,d;
+enddecl 
+
+integer sum(integer a , integer b,integer c){
+    decl
+        integer z;
+    enddecl
+    begin
+        z = 0;
+        if c==0 then
+           z = a+b;
+        else
+            z = sum(a,b,0)+c; 
+        endif;
+        return  z;
+    end
+
+}
+
+integer main(){
+decl
+integer x;
+enddecl
+begin 
+    a = 2;
+    d = 4;
+    i = 3;
+    //print a ,d,i;
+    if a == 2 then 
+    print 1000;
+    endif;
+    print sum(a,d,i);
+    return 1;
+end
+}

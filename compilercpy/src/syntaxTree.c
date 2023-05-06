@@ -13,8 +13,9 @@ void printSyntaxTree(node *p) {
 	return ;
  } 
  switch(p->type) {
- 	case typeCon: printf("NUM "); printf("\n");return ;
-	case typeId : printf("VAR "); /*printf("\n")*/;return ;
+ 	case typeCon: printf("NUM %d",p->con.value); printf("\n");return ;
+	case typeId : printf("VAR %s",p->id.id); /*printf("\n")*/;return ;
+	case typeFun:printf("FUNCTION BLOCK\n"); return ;
  	case typeOpr:
  	switch(p->opr.oper) {
 		case '+': printf("PLUS (");printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]); printf(")");printf("\n"); return ;
@@ -26,7 +27,7 @@ void printSyntaxTree(node *p) {
         case '%': printf("MOD (");printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]);printf(")");printf("\n");return ;
 		case '=': printf("ASSIGN ("); printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]); printf(")"); /*printf("\n");*/return ;
 		case PRINT :  printf("PRINT "); printSyntaxTree(p->opr.op[0]); /*printf(")");*/ printf("\n");return ;
-		case PRINT_List :  printf("PRINT ("); printSyntaxTree(p->opr.op[0]); printf(",");printSyntaxTree(p->opr.op[1]); printf(")"); printf("\n");return ;
+		//case PRINT_List :  printf("PRINT ("); printSyntaxTree(p->opr.op[0]); printf(",");printSyntaxTree(p->opr.op[1]); printf(")"); printf("\n");return ;
 		case IF : 	{ 
 						printf("IF "); printSyntaxTree(p->opr.op[0]); printf("\n"); 
 						printSyntaxTree(p->opr.op[1]); printf("\nELSE ");
@@ -47,6 +48,7 @@ void printSyntaxTree(node *p) {
 							decl--;
 							if(!decl) printf("\n");
 							return ;
+		case DECLARE_L: {}
 		case DECLARE :  if(!decl)printf("DECL "); 
 							decl++;
 							printSyntaxTree(p->opr.op[0]);
@@ -66,13 +68,13 @@ void printSyntaxTree(node *p) {
 					printf("FUN CALL %s", p->opr.op[0]);
 					return ;
 		
-        case GREATERTHANOREQUAL: printf("GREATERTHANOREQUAL "); printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]); printf(")"); return ;
-        case LESSTHANOREQUAL: printf("LESSTHANOREQUAL "); printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]); printf(")");return ;
-        case NOTEQUAL: printf("NOTEQUAL "); printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]);printf(")");return ;
-        case EQUALEQUAL: printf("EQUALEQUAL "); printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]);printf(")");return ;
-        case LOGICAL_NOT: printf("LOGICAL_NOT "); printSyntaxTree(p->opr.op[0]); printf(")"); return ;
-		case LOGICAL_AND: printf("LOGICAL_AND "); printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]);printf(")");return ;
-        case LOGICAL_OR: printf("LOGICAL_OR "); printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]);printf(")");return ;
+        case GREATERTHANOREQUAL: printf("GREATERTHANOREQUAL ("); printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]); printf(")"); return ;
+        case LESSTHANOREQUAL: printf("LESSTHANOREQUAL ("); printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]); printf(")");return ;
+        case NOTEQUAL: printf("NOTEQUAL ("); printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]);printf(")");return ;
+        case EQUALEQUAL: printf("EQUALEQUAL ("); printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]);printf(")");return ;
+        case LOGICAL_NOT: printf("LOGICAL_NOT ("); printSyntaxTree(p->opr.op[0]); printf(")"); return ;
+		case LOGICAL_AND: printf("LOGICAL_AND ("); printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]);printf(")");return ;
+        case LOGICAL_OR: printf("LOGICAL_OR ("); printSyntaxTree(p->opr.op[0]); printf(","); printSyntaxTree(p->opr.op[1]);printf(")");return ;
 		
 		
 		case STMNT: { 

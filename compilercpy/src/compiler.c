@@ -65,8 +65,10 @@ int ex(node *p)
 
 		/// IFL????
 		case IFL:
-			if (ex(p->opr.op[0] == 1))
+			printf("IFL\n");
+			if (ex(p->opr.op[0]) == 1)
 			{
+				printf("hello\n");
 				return ex(p->opr.op[1]);
 			}
 			else
