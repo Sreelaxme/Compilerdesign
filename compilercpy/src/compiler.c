@@ -11,6 +11,7 @@ node *getFn(char *str);
 
 node *evalF(funNodeType fn);
 char *passParameters(node *fNode, struct node_item *list);
+void printError(char *, int , node *);
 
 int ex(node *p)
 {
@@ -56,7 +57,7 @@ int ex(node *p)
 			ex(p->opr.op[0]);
 			ex(p->opr.op[1]);
 			return 0;
-
+		case PRINTS : printf(" %s",p->opr.op[0]); return 0;
 		case IF:
 			if (ex(p->opr.op[0]) == 1)
 				return ex(p->opr.op[1]);
@@ -428,35 +429,34 @@ void printSymTabL()
 }
 
 /// variables
-int declareVar(varItemtype *varList, int global)
+
+int declareL(char *name, int size)
 {
-	int flag = 0;
-	varItemtype *ptr = varList;
-	if (global == 1)
+
+	char *newName = strdup(name);
+
+	int i;
+	for (i = 0; i < SYM_G && saveTab[i].declared; i++)
 	{
-		while (ptr != NULL)
-		{
-			flag = declareG(ptr->name, ptr->length);
-			if (flag == -1)
-			{
-				return -1;
-			}
-			ptr = ptr->next;
-		}
+		if (strcmp(saveTab[i].name, newName) == 0)
+			return i;
+	}
+	if (i >= 100)
+		return -1;
+	saveTab[i].name=newName;
+	if (size == 0)
+	{
+		saveTab[i].type = typeInt;
+		saveTab[i].declared = 1;
 	}
 	else
 	{
-		while (ptr != NULL)
-		{
-			flag = declareL(ptr->name, ptr->length);
-			if (flag == -1)
-			{
-				return -1;
-			}
-			ptr = ptr->next;
-		}
+		saveTab[i].type = typeArr;
+		saveTab[i].declared = size;
+		saveTab[i].int_ar = malloc(sizeof(int) * size);
 	}
-	return 1;
+
+	return i;
 }
 
 int declareG(char *name, int size)
@@ -490,34 +490,38 @@ int declareG(char *name, int size)
 	return i;
 }
 
-int declareL(char *name, int size)
+
+int declareVar(varItemtype *varList, int global)
 {
-
-	char *newName = strdup(name);
-
-	int i;
-	for (i = 0; i < SYM_G && saveTab[i].declared; i++)
+	int flag = 0;
+	varItemtype *ptr = varList;
+	if (global == 1)
 	{
-		if (strcmp(saveTab[i].name, newName) == 0)
-			return i;
-	}
-	if (i >= 100)
-		return -1;
-	saveTab[i].name=newName;
-	if (size == 0)
-	{
-		saveTab[i].type = typeInt;
-		saveTab[i].declared = 1;
+		while (ptr != NULL)
+		{
+			flag = declareG(ptr->name, ptr->length);
+			if (flag == -1)
+			{
+				return -1;
+			}
+			ptr = ptr->next;
+		}
 	}
 	else
 	{
-		saveTab[i].type = typeArr;
-		saveTab[i].declared = size;
-		saveTab[i].int_ar = malloc(sizeof(int) * size);
+		while (ptr != NULL)
+		{
+			flag = declareL(ptr->name, ptr->length);
+			if (flag == -1)
+			{
+				return -1;
+			}
+			ptr = ptr->next;
+		}
 	}
-
-	return i;
+	return 1;
 }
+
 
 char *passParameters(node *fNode, struct node_item *list)
 {
@@ -547,7 +551,7 @@ void printError(char *str, int ops, node *p)
 	fprintf(stderr, "%s", str);
 	for (int i = 0; i < ops; i++)
 	{
-		printf(stderr, "%s", p->opr.op[i]);
+		fprintf(stderr, "%s", p->opr.op[i]);
 	}
 	fprintf(stderr, "\n");
 	return;

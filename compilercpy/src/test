@@ -2,13 +2,12 @@ integer main()
 {
     decl
     integer a ;
-    integer b;
     enddecl
     begin 
     a =1 ;
-    b = 2;
-    print a,b;
-    return a;
+    print a+1;
+    print (hello) ,hii;
+    return 1;
     end
 }
 

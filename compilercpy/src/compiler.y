@@ -13,6 +13,7 @@ int declareFn(char* name, node* ptr);
 node* getFn(char* str);
 int updateFunStat(char* str,node* ptr);
 void printSyntaxTree(node* );
+void toC(node *);
 void printSymTab();
 struct sym symTab[100];
 int update_arr(char * str, int ar_index, int value);
@@ -50,10 +51,10 @@ extern struct sym symTab[100];
 };
 
 %token <iValue> NUMBER
-%token <str> VARIABLE 
+%token <str> VARIABLE STRING
 %token INT VOID BOOL
-%token DECL ENDDECL DECLARE_L DECLARE DECLARE_G STMNT DECLARE_List DECLARE_Fn CALL Main
-%token PRINT  PRINT_List Begin End 
+%token DECL ENDDECL DECLARE_L DECLARE DECLARE_G STMNT DECLARE_List DECLARE_Fn CALL Main 
+%token PRINT  PRINTS PRINT_List Begin End 
 %token MAIN INDEX
 %token IF THEN ELSE ENDIF IFL
 %token DO WHILE ENDWHILE
@@ -61,7 +62,7 @@ extern struct sym symTab[100];
 %token LOGICAL_AND LOGICAL_NOT LOGICAL_OR
 %token READ WRITE
 %token ARRAY_DECLARE ARRAY_ASSIGN
-%token RETURN 
+%token RETURN
 
 %left '<' '>'
 %left EQUALEQUAL LESSTHANOREQUAL GREATERTHANOREQUAL NOTEQUAL
@@ -73,7 +74,7 @@ extern struct sym symTab[100];
 
 
 %type <nPtr> expr stmt pList Fdef stmt_list decl_stmt_l decl_stmt_g main 
-%type <nPtr> func_call MAIN decl_line
+%type <nPtr> func_call MAIN decl_line read
 %type <iValue> return_type
 %type <argList> arg_list
 %type <paramList> param_list
@@ -88,12 +89,13 @@ program:
 	|program endl Fdef endl {/*printf("prgrm 1 \n"*);printSyntaxTree($3); */ ex($3);}
 	|program endl main endl { /*printf("main\n");*/
 							//printSyntaxTree($3);
+							toC($3);
 							printf("\n\n\nPROGRAM OUTPUT \n"); 
 									ex($3);
 									printf("\nSymbol Table\n");
 									printSymTab();}
-	| program endl func_call endl {/*printSyntaxTree($3);*/ ex($3);}
-	| program endl decl_stmt_g endl {printf("\n\nSYNTAX TREE\n"); /*printSyntaxTree($3); */ex($3);printSymTab();}
+	| program endl func_call endl {/*printSyntaxTree($3);*/ toC($3); ex($3);}
+	| program endl decl_stmt_g endl {printf("\n\nSYNTAX TREE\n"); /*printSyntaxTree($3); */toC($3); ex($3);printSymTab();}
 	;
 return_type:
 	INT {$$=Int;}
@@ -163,6 +165,10 @@ decl_stmt_g:
 ///////////////////////////////LOCAL//////////////////////////
 decl_stmt_l:
 	DECL endl decl_line endl ENDDECL  {$$ = opr(DECLARE_L,1,$3);}
+//////////////////////////
+read : 
+	READ '(' var ')' {$$ = opr(READ,1,$3);}
+	;
 stmt:
 	expr ';' { $$=$1;}
 	| VARIABLE '[' expr ']' '=' expr ';' {$$ = opr(ARRAY_ASSIGN,3,id($1),$3,$6);}
@@ -170,16 +176,19 @@ stmt:
 	| VARIABLE '=' expr ';'{/*printf("variable assignment\n");*/$$ = opr('=', 2, id($1), $3);}
 						
 	| PRINT pList';' { /*printf("trying to print\n");*/ $$ = $2;} 
+	| PRINT '(' STRING ')' ';' { $$ = opr(PRINTS,1,$3); }
 	| IF expr endl THEN endl stmt_list endl ELSE endl stmt_list endl ENDIF ';' { /*printf("ifelse il keri\n") ;*/ $$ = opr(IF,3,$2,$6,$10);}
 	| IF expr endl THEN endl stmt_list endl  ENDIF ';' {  printf("haii\n"); $$ = opr(IFL,2,$2,$6);}
 	| WHILE expr DO endl stmt_list endl ENDWHILE ';' { /*printf("while il keri \n");*/ $$ = opr(WHILE,2,$2,$5);}
 	| VARIABLE{/*printf("evdeya\n");*/$$=$1;}
 	|func_call ';'{$$=$1;}
+	| read ';' {$$ = $1;}
 	;
 expr:	
 	NUMBER { $$ = con($1); }
 	|VARIABLE {/*printf("thaan evde ano?\n");*/$$ = id($1);}
 	| VARIABLE '[' expr ']' {$$ = opr(INDEX,2,id($1),$3);}
+	| '-' expr %prec UMINUS { $$ = opr('-', 2, con(0), $2); }
 	| expr '+' expr { $$ = opr('+', 2, $1, $3); }
 	| expr '-' expr { $$ = opr('-', 2, $1, $3); }
 	| expr '*' expr { $$ = opr('*', 2, $1, $3); }

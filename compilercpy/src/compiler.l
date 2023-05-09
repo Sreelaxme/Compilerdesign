@@ -53,7 +53,11 @@ NOT			{return LOGICAL_NOT ;}
 [-+*/=()><;,\{\}\[\]\%\n] {
  					return *yytext;
  }
-
+\"[^"\n]*["\n]  { 
+                    yylval.str = strdup(yytext) + sizeof(char);
+                    yylval.str[strlen(yytext)-2] = '\0'; 
+                    return STRING;
+                }
 {letter}({letter}|{digit})* {
 	yylval.str = strdup(yytext);
 	return VARIABLE;

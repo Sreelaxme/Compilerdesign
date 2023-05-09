@@ -1,0 +1,22 @@
+MAIN
+{
+DECLARE_L
+ a= 1;
+
+printf( a+ 1;
+ );
+
+printf( hello );
+printf( hii );
+return  1;
+}
+
+
+PROGRAM OUTPUT 
+2
+0
+0
+
+Symbol Table
+index	name	alloc	val
+0	MAIN	1	1	0x55fdb02b5b70
