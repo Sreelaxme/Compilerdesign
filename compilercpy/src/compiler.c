@@ -66,10 +66,10 @@ int ex(node *p)
 
 		/// IFL????
 		case IFL:
-			printf("IFL\n");
+			
 			if (ex(p->opr.op[0]) == 1)
 			{
-				printf("hello\n");
+				
 				return ex(p->opr.op[1]);
 			}
 			else
@@ -100,12 +100,13 @@ int ex(node *p)
 			return 0;
 		case DECLARE_Fn:
 			// printf("Declare fn in c \n");
+			//printf("uim\n");
 			declareFn(p->opr.op[0], p->opr.op[1]);
 
 			return 0;
 		case CALL:
 		{
-
+			//printf("uim");
 			node *ptr = getFn(p->opr.op[0]);
 			if (ptr == NULL || ptr == __UINTPTR_MAX__)
 			{

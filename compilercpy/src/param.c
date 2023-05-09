@@ -129,3 +129,14 @@ int lengthOfVarList(varItemtype *list)
     return i;
     
 }
+void printarglist(struct arg_item *list) {
+    argListType *ptr = list;
+
+    while (ptr != NULL) {
+        fprintf(stdout, "%s %s", ptr->type, ptr->name);
+        ptr = ptr->next;
+        if (ptr != NULL) {
+            fprintf(stdout, ", ");
+        }
+    }
+}

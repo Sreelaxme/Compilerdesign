@@ -12,3 +12,7 @@
 - May  -6
     - In compiler cpy folder, functions updated to support multiple line declare statements, recursion,functions with parameters.
     - function call working good
+
+- almost done
+- To run : 
+    - try "make output" from compiler folder and the testcase in the test case file will be evaluated and printed in the output file

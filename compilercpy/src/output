@@ -1,22 +1,21 @@
-MAIN
+int a;
+int main()
 {
-DECLARE_L
- a= 1;
-
-printf( a+ 1;
- );
-
-printf( hello );
-printf( hii );
-return  1;
+int b;
+ a = 1;
+ b = 1;
+if( a == 1){
+printf(" %d",1);
+ a = 0;
+}
+return 1;
 }
 
 
 PROGRAM OUTPUT 
-2
-0
-0
+1
 
 Symbol Table
 index	name	alloc	val
-0	MAIN	1	1	0x55fdb02b5b70
+0	a	1	1	0
+1	MAIN	1	1	0x557b6672be60

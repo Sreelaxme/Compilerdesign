@@ -84,3 +84,37 @@ begin
     return 1;
 end
 }
+decl 
+integer z;
+enddecl
+integer sum(){
+    decl 
+    integer b;
+    enddecl
+    begin
+    print 2;
+    return 1;
+    end
+}
+integer main()
+{
+    decl
+    integer a,m[2] ;
+    
+    enddecl
+    begin 
+    
+    m[1] = 2;
+    a = m[1] ;
+    while(a==1) do 
+    print 1;
+    
+    a=a-1;
+    endwhile;
+    if (1==2) then
+    print a;
+    endif ;
+    sum();
+    return 1;
+    end
+}

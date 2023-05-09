@@ -12,13 +12,13 @@ void toC(node *p) {
 	return ;
  } 
  switch(p->type) {
- 	case typeCon: fprintf(stdout," %d",p->con.value); /*fprintf(stdout,"\n");*/return ;
+ 	case typeCon: fprintf(stdout,"%d",p->con.value); /*fprintf(stdout,"\n");*/return ;
 	case typeId : fprintf(stdout," %s",p->id.id); /*fprintf("\n")*/;return ;
 	case typeFun:{
         fprintf(stdout,"{\n");
         toC(p->fn.decl);
         toC(p->fn.fun_block);
-        fprintf(stdout,"return ");
+        fprintf(stdout,"\nreturn ");
         toC(p->fn.ret_node); 
         fprintf(stdout,";");
         fprintf(stdout,"\n}");
@@ -26,32 +26,94 @@ void toC(node *p) {
     }
  	case typeOpr:
  	switch(p->opr.oper) {
-		case '+': toC(p->opr.op[0]); fprintf(stdout,"+"); toC(p->opr.op[1]);/* fprintf(")");*/ fprintf(stdout,";\n"); return ;
-		case '-': toC(p->opr.op[0]); fprintf(stdout,"-"); toC(p->opr.op[1]); fprintf(stdout,";\n");return ;
-		case '*': toC(p->opr.op[0]); fprintf(stdout,"*"); toC(p->opr.op[1]);fprintf(stdout,";\n");return ;
-		case '/': toC(p->opr.op[0]); fprintf(stdout,"/"); toC(p->opr.op[1]); fprintf(stdout,";\n");return ;
-        case '<': toC(p->opr.op[0]); fprintf(stdout,"<LESS (>"); toC(p->opr.op[1]); fprintf(stdout,";\n");return ;
-        case '>': toC(p->opr.op[0]);fprintf(stdout,">"); toC(p->opr.op[1]);fprintf(stdout,";\n");return ;
-        case '%': toC(p->opr.op[0]);  fprintf(stdout,"%");toC(p->opr.op[1]);fprintf(stdout,";\n");return ;
-		case '=':  toC(p->opr.op[0]); fprintf(stdout,"=");toC(p->opr.op[1]); fprintf(stdout,";\n"); /*fprintf("\n");*/return ;
-		case PRINT :  fprintf(stdout,"printf("); toC(p->opr.op[0]);fprintf(stdout," )"); /*fprintf(")");*/ fprintf(stdout,";\n");return ;
+		case '+': toC(p->opr.op[0]); fprintf(stdout," + "); toC(p->opr.op[1]);/* fprintf(")");*/ fprintf(stdout,";"); return ;
+		case '-': toC(p->opr.op[0]); fprintf(stdout," - "); toC(p->opr.op[1]); fprintf(stdout,";");return ;
+		case '*': toC(p->opr.op[0]); fprintf(stdout," * "); toC(p->opr.op[1]);fprintf(stdout,";");return ;
+		case '/': toC(p->opr.op[0]); fprintf(stdout," / "); toC(p->opr.op[1]); fprintf(stdout,";");return ;
+        case '<': toC(p->opr.op[0]); fprintf(stdout," < "); toC(p->opr.op[1]); fprintf(stdout,";");return ;
+        case '>': toC(p->opr.op[0]);fprintf(stdout," > "); toC(p->opr.op[1]);fprintf(stdout,";");return ;
+        case '%': toC(p->opr.op[0]);  fprintf(stdout," %% ");toC(p->opr.op[1]);fprintf(stdout,";");return ;
+   
+		case '=':  toC(p->opr.op[0]); fprintf(stdout," = ");toC(p->opr.op[1]); fprintf(stdout,";"); /*fprintf("\n");*/return ;
+		case PRINT :  {
+            fprintf(stdout,"printf(\"\ ");
+            int n =lengthOfArgList(p->opr.op[0]);
+            char * str ="%";
+            for(int i =0;i<n;i++)
+            {
+                fprintf(stdout,"%sd",str);
+            }
+            fprintf(stdout,"\"\,");
+            toC(p->opr.op[0]);fprintf(stdout,")"); /*fprintf(")");*/ fprintf(stdout,";");return ;
+            }
 		case PRINT_List :  /*fprintf(stdout,"printf("); */toC(p->opr.op[0]); /*fprintf(stdout,");\n");*/toC(p->opr.op[1]); /*fprintf(stdout,")"); fprintf(stdout,"\n");*/return ;
-        case PRINTS : fprintf(stdout,"printf(\""); toC(p->opr.op[0]); fprintf(stdout,"\");\n"); return ;
-		// case IF : 	{ 
-		// 				fprintf("IF "); toC(p->opr.op[0]); printf("\n"); 
-		// 				toC(p->opr.op[1]); fprintf(";\nELSE ");
-		// 				toC(p->opr.op[2]); fprintf("\nENDIF");
-		// 				fprintf("\n");return;
-		// 			}
-		// case WHILE: {
-		// 				fprintf("WHILE "); toC(p->opr.op[0]); 
-		// 				fprintf("\n"); toC(p->opr.op[1]); fprintf("\nEND WHILE");
-		// 				fprintf(";\n");
-		// 				return;
-		// 		}
-		// 
-		case DECLARE_L: {fprintf(stdout,"DECLARE_L\n");return ;}
-        case DECLARE_G: {fprintf(stdout,"DECLARE_G\n");return ;}
+        case PRINTS : fprintf(stdout,"printf(\"%s",p->opr.op[0]); toC(p->opr.op[0]); fprintf(stdout,"\");\n"); return ;
+		case IF : 	{ 
+						fprintf(stdout,"if("); toC(p->opr.op[0]); fprintf(stdout,"){\n"); 
+						toC(p->opr.op[1]); fprintf(stdout,"}\nelse {\n");
+						toC(p->opr.op[2]); fprintf(stdout,"}");
+						return;
+					}
+        case IFL : 	{ 
+						fprintf(stdout,"if("); toC(p->opr.op[0]); fprintf(stdout,"){\n"); 
+						toC(p->opr.op[1]);  fprintf(stdout,"\n}");
+						return;
+					}
+		case WHILE: {
+						fprintf(stdout,"while("); toC(p->opr.op[0]); 
+						fprintf(stdout,"){\n"); toC(p->opr.op[1]); fprintf(stdout,"\n}");
+						return;
+				}
+		
+		case DECLARE_L: {
+            varItemtype * list = p->opr.op[0];
+            fprintf(stdout, "int ");
+            if (!list) {
+                fprintf(stdout, "");
+            }
+            int firstVar = 1;
+            while (list != NULL) {
+                if (!firstVar) {
+                    fprintf(stdout, ", ");
+                }
+                fprintf(stdout, "%s", list->name);
+                if (list->length > 0) {
+                    fprintf(stdout, "[%d]", list->length);
+                }
+                list = list->next;
+                firstVar = 0;
+            }
+            fprintf(stdout, ";\n");
+            return;
+        }
+
+        case DECLARE_G: {
+            fprintf(stdout, "int ");
+            varItemtype *current = p->opr.op[0];
+
+            if (!current) {
+                fprintf(stdout, "");
+            }
+
+            while (current != NULL) {
+                fprintf(stdout, "%s", current->name);
+
+                if (current->length > 0) {
+                    fprintf(stdout, "[%d]", current->length);
+                }
+
+                current = current->next;
+
+                if (current != NULL) {
+                    fprintf(stdout, ",");
+                }
+            }
+
+            fprintf(stdout, ";\n");
+            return;
+        }
+
+        
 		// case DECLARE :  if(!decl)fprintf("DECL "); 
 		// 					decl++;
 		// 					toC(p->opr.op[0]);
@@ -60,24 +122,45 @@ void toC(node *p) {
 		// 					fprintf("\n");
 
 		// 					return ;
-		// case DECLARE_Fn: fprintf("FUN INT %s\n",p->opr.op[0]->id.id);
-		// 				toC(p->opr.op[1]);
-		// 				//fprintf("END FUN\n");
-		// 				return ;
-		case Main: fprintf(stdout,"MAIN\n"); toC(p->opr.op[0]);
-							/*fprintf(stdout,"END MAIN\n"); */
+		case DECLARE_Fn: {
+            fprintf(stdout,"%s\n",p->opr.op[0]->id.id);
+                printarglist(p->opr.op[1]->fn.arg_list);
+                fprintf(stdout,"){\n");
+                                toC(p->opr.op[1]);
+                                fprintf(stdout,"\n}\n");
+						return ;
+        }
+		case Main: fprintf(stdout,"int main()\n"); toC(p->opr.op[0]);
+							// fprintf(stdout,"\n}\n"); 
 							return ;
-		// case CALL : 
-		// 			fprintf("FUN CALL %s", p->opr.op[0]);
-		// 			return ;
+		case CALL: {
+            fprintf(stdout,"%s(", p->opr.op[0]); 
+            
+            nodeItemtype * ptr = p->opr.op[1];
+            
+            while(ptr != NULL)
+            {
+                fprintf(stdout,"%s",ptr->node_ptr->type);
+                toC(ptr->node_ptr);
+                ptr = ptr->next;
+                if(ptr != NULL)
+                {
+                    fprintf(stdout,", ");
+                }
+            }
+
+            fprintf(stdout,")");
+            return;
+        }
+
 		
-        // case GREATERTHANOREQUAL: fprintf("GREATERTHANOREQUAL ("); toC(p->opr.op[0]); fprintf(","); toC(p->opr.op[1]); fprintf(")"); return ;
-        // case LESSTHANOREQUAL: fprintf("LESSTHANOREQUAL ("); toC(p->opr.op[0]); fprintf(","); toC(p->opr.op[1]); fprintf(")");return ;
-        // case NOTEQUAL: fprintf("NOTEQUAL ("); toC(p->opr.op[0]); fprintf(","); toC(p->opr.op[1]);fprintf(")");return ;
-        // case EQUALEQUAL: fprintf("EQUALEQUAL ("); toC(p->opr.op[0]); fprintf(","); toC(p->opr.op[1]);fprintf(")");return ;
-        // case LOGICAL_NOT: fprintf("LOGICAL_NOT ("); toC(p->opr.op[0]); fprintf(")"); return ;
-		// case LOGICAL_AND: fprintf("LOGICAL_AND ("); toC(p->opr.op[0]); fprintf(","); toC(p->opr.op[1]);fprintf(")");return ;
-        // case LOGICAL_OR: fprintf("LOGICAL_OR ("); toC(p->opr.op[0]); fprintf(","); toC(p->opr.op[1]);fprintf(")");return ;
+        case GREATERTHANOREQUAL: toC(p->opr.op[0]);fprintf(stdout," >= ");  toC(p->opr.op[1]);  return ;
+        case LESSTHANOREQUAL:  toC(p->opr.op[0]); fprintf(stdout," <= "); toC(p->opr.op[1]); return ;
+        case NOTEQUAL:  toC(p->opr.op[0]);fprintf(stdout," != "); toC(p->opr.op[1]);return ;
+        case EQUALEQUAL: toC(p->opr.op[0]);  fprintf(stdout," == "); toC(p->opr.op[1]);return ;
+        case LOGICAL_NOT:  fprintf(stdout,"!");toC(p->opr.op[0]);return ;
+		case LOGICAL_AND: toC(p->opr.op[0]);fprintf(stdout," && ");toC(p->opr.op[1]);return ;
+        case LOGICAL_OR: toC(p->opr.op[0]); fprintf(stdout," || "); toC(p->opr.op[1]);return ;
 		
 		
 		case STMNT: { 
@@ -85,8 +168,14 @@ void toC(node *p) {
 						fprintf(stdout,"\n"); toC(p->opr.op[1]);return; 
 					}
 		// case ARRAY_DECLARE : fprintf("ARR VAR "); fprintf(" %d", p->opr.op[1]->con.value);/*toC(p->opr.op[0]);fprintf(")");*/return ;
-		// case ARRAY_ASSIGN : fprintf("ASSIGN ARREF ");toC(p->opr.op[0]); toC(p->opr.op[1]); toC(p->opr.op[2]);fprintf(")");return ;
-		// case INDEX: fprintf("ARREF VAR "); toC(p->opr.op[0]); return;
+		case ARRAY_ASSIGN : toC(p->opr.op[0]); fprintf(stdout,"[");toC(p->opr.op[1]);fprintf(stdout,"] = "); toC(p->opr.op[2]);fprintf(stdout,";\n");return ;
+		case INDEX:  toC(p->opr.op[0]);fprintf(stdout,"["); toC(p->opr.op[1]);fprintf(stdout,"];\n");return;
+        case READ: {
+            varItemtype* var_ptr = p->opr.op[0];
+            fprintf(stdout, "scanf(\"%%d\", &%s);", var_ptr->name);
+            return;
+        }
+
 		
  	}
 

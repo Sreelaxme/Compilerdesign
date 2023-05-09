@@ -95,7 +95,7 @@ program:
 									printf("\nSymbol Table\n");
 									printSymTab();}
 	| program endl func_call endl {/*printSyntaxTree($3);*/ toC($3); ex($3);}
-	| program endl decl_stmt_g endl {printf("\n\nSYNTAX TREE\n"); /*printSyntaxTree($3); */toC($3); ex($3);printSymTab();}
+	| program endl decl_stmt_g endl { /*printSyntaxTree($3); */toC($3); ex($3);}
 	;
 return_type:
 	INT {$$=Int;}
@@ -178,7 +178,7 @@ stmt:
 	| PRINT pList';' { /*printf("trying to print\n");*/ $$ = $2;} 
 	| PRINT '(' STRING ')' ';' { $$ = opr(PRINTS,1,$3); }
 	| IF expr endl THEN endl stmt_list endl ELSE endl stmt_list endl ENDIF ';' { /*printf("ifelse il keri\n") ;*/ $$ = opr(IF,3,$2,$6,$10);}
-	| IF expr endl THEN endl stmt_list endl  ENDIF ';' {  printf("haii\n"); $$ = opr(IFL,2,$2,$6);}
+	| IF expr endl THEN endl stmt_list endl  ENDIF ';' {   $$ = opr(IFL,2,$2,$6);}
 	| WHILE expr DO endl stmt_list endl ENDWHILE ';' { /*printf("while il keri \n");*/ $$ = opr(WHILE,2,$2,$5);}
 	| VARIABLE{/*printf("evdeya\n");*/$$=$1;}
 	|func_call ';'{$$=$1;}
