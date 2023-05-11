@@ -1,21 +1,29 @@
-decl 
-integer a ;
+decl
+    integer i,arr[10],a,d;
 enddecl
-integer main()
-{
-    decl 
-    integer b ;
-    enddecl
-    begin
-    a = 1;
-    b = 1;
-    if(a==1) then
-    print 1;
-    a = 0;
-    endif;
-    return 1;
+
+integer main() { 
+    begin 
+        i = 0;
+        d = 3;
+        a = 20;
+        
+        while i<10
+        do 
+            arr[i] = 2;
+			i = i+1;
+            // print arr[i];
+        endwhile;
+
+        i = 0;
+
+        while i<10
+        do 
+            print (arr[i]);
+			i = i+1;
+        endwhile;
+
+        return 0;
+
     end
-
 }
-
-

@@ -5,10 +5,19 @@
 #include <stdlib.h>
 node* getFn(char* str);
 int decl = 0;
+FILE * fp ;
 
+FILE * startcodegeneration(char * dir)
+{
+	FILE * f = fopen(dir,"w+");
+	fprintf(f,"#include<stdio.h>\n\n");
+	return f;
+	//return stdout;
+}
 void toC(node *p) {
 //printf("Im in printSYntax");
  if (!p) {
+    
 	return ;
  } 
  switch(p->type) {
@@ -26,13 +35,13 @@ void toC(node *p) {
     }
  	case typeOpr:
  	switch(p->opr.oper) {
-		case '+': toC(p->opr.op[0]); fprintf(stdout," + "); toC(p->opr.op[1]);/* fprintf(")");*/ fprintf(stdout,";"); return ;
-		case '-': toC(p->opr.op[0]); fprintf(stdout," - "); toC(p->opr.op[1]); fprintf(stdout,";");return ;
-		case '*': toC(p->opr.op[0]); fprintf(stdout," * "); toC(p->opr.op[1]);fprintf(stdout,";");return ;
-		case '/': toC(p->opr.op[0]); fprintf(stdout," / "); toC(p->opr.op[1]); fprintf(stdout,";");return ;
-        case '<': toC(p->opr.op[0]); fprintf(stdout," < "); toC(p->opr.op[1]); fprintf(stdout,";");return ;
-        case '>': toC(p->opr.op[0]);fprintf(stdout," > "); toC(p->opr.op[1]);fprintf(stdout,";");return ;
-        case '%': toC(p->opr.op[0]);  fprintf(stdout," %% ");toC(p->opr.op[1]);fprintf(stdout,";");return ;
+		case '+': toC(p->opr.op[0]); fprintf(stdout," + "); toC(p->opr.op[1]);/* fprintf(")");*/return ;
+		case '-': toC(p->opr.op[0]); fprintf(stdout," - "); toC(p->opr.op[1]);return ;
+		case '*': toC(p->opr.op[0]); fprintf(stdout," * "); toC(p->opr.op[1]);return ;
+		case '/': toC(p->opr.op[0]); fprintf(stdout," / "); toC(p->opr.op[1]); return ;
+        case '<': toC(p->opr.op[0]); fprintf(stdout," < "); toC(p->opr.op[1]); return ;
+        case '>': toC(p->opr.op[0]);fprintf(stdout," > "); toC(p->opr.op[1]);return ;
+        case '%': toC(p->opr.op[0]);  fprintf(stdout," %% ");toC(p->opr.op[1]);return ;
    
 		case '=':  toC(p->opr.op[0]); fprintf(stdout," = ");toC(p->opr.op[1]); fprintf(stdout,";"); /*fprintf("\n");*/return ;
 		case PRINT :  {
@@ -169,7 +178,7 @@ void toC(node *p) {
 					}
 		// case ARRAY_DECLARE : fprintf("ARR VAR "); fprintf(" %d", p->opr.op[1]->con.value);/*toC(p->opr.op[0]);fprintf(")");*/return ;
 		case ARRAY_ASSIGN : toC(p->opr.op[0]); fprintf(stdout,"[");toC(p->opr.op[1]);fprintf(stdout,"] = "); toC(p->opr.op[2]);fprintf(stdout,";\n");return ;
-		case INDEX:  toC(p->opr.op[0]);fprintf(stdout,"["); toC(p->opr.op[1]);fprintf(stdout,"];\n");return;
+		case INDEX:  toC(p->opr.op[0]);fprintf(stdout,"["); toC(p->opr.op[1]);fprintf(stdout,"]");return;
         case READ: {
             varItemtype* var_ptr = p->opr.op[0];
             fprintf(stdout, "scanf(\"%%d\", &%s);", var_ptr->name);

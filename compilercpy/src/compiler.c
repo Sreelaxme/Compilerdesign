@@ -149,8 +149,11 @@ int ex(node *p)
 			return 0;
 		case ARRAY_DECLARE:
 			declare_array(p->opr.op[0]->id.id, ex(p->opr.op[1]));
+			return ;
 		case ARRAY_ASSIGN:
+		
 			update_arr(p->opr.op[0]->id.id, ex(p->opr.op[1]), ex(p->opr.op[2]));
+			return 0;
 		case INDEX:
 			return fetch_var_ar(p->opr.op[0]->id.id, ex(p->opr.op[1]));
 		}
@@ -340,14 +343,16 @@ int update_arr(char *str, int ar_index, int value)
 		index = symReadL(str);
 		if (index >= 0 && saveTab[index].declared)
 		{
-			saveTab[index].allocated = 1;
 			saveTab[index].int_ar[ar_index] = value;
+			saveTab[index].allocated = 1;
+			
 			return 1;
 		}
 	}
 	index = symRead(str);
-	symTab[index].allocated = 1;
 	symTab[index].int_ar[ar_index] = value;
+	symTab[index].allocated = 1;
+	
 	// printf("update done ...so variable assigned correctly to %d \n",symTab[index].int_ar[ar_index]);
 	// printf("array val updated\n");
 	return 1;

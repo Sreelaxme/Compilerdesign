@@ -1,21 +1,39 @@
-int a;
+int d,a,arr[10],i;
 int main()
 {
-int b;
- a = 1;
- b = 1;
-if( a == 1){
-printf(" %d",1);
- a = 0;
+ i = 0;
+ d = 3;
+ a = 20;
+while( i < 10){
+ arr[ i] = 2;
+
+ i =  i + 1;
 }
-return 1;
+ i = 0;
+while( i < 10){
+printf(" %d%d", arr[ i]);
+ i =  i + 1;
+}
+return 0;
 }
 
 
 PROGRAM OUTPUT 
-1
+-1
+-1
+-1
+-1
+-1
+-1
+-1
+-1
+-1
+-1
 
 Symbol Table
 index	name	alloc	val
-0	a	1	1	0
-1	MAIN	1	1	0x557b6672be60
+0	d	1	1	3
+1	a	1	1	20
+2	arr	1	10	0x2 
+3	i	1	1	10
+4	MAIN	1	1	0x561e1fab0e00

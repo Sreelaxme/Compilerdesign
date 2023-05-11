@@ -54,7 +54,7 @@ extern struct sym symTab[100];
 %token <str> VARIABLE STRING
 %token INT VOID BOOL
 %token DECL ENDDECL DECLARE_L DECLARE DECLARE_G STMNT DECLARE_List DECLARE_Fn CALL Main 
-%token PRINT  PRINTS PRINT_List Begin End 
+%token PRINT PRINTS PRINT_List Begin End 
 %token MAIN INDEX
 %token IF THEN ELSE ENDIF IFL
 %token DO WHILE ENDWHILE
@@ -86,7 +86,7 @@ extern struct sym symTab[100];
 
 
 program:
-	|program endl Fdef endl {/*printf("prgrm 1 \n"*);printSyntaxTree($3); */ ex($3);}
+	|program endl Fdef endl {/*printf("prgrm 1 \n"*);printSyntaxTree($3); */ toC($3);ex($3);}
 	|program endl main endl { /*printf("main\n");*/
 							//printSyntaxTree($3);
 							toC($3);
@@ -160,11 +160,14 @@ decl_line:
 	| INT VARIABLE '(' arg_list ')' ';' endl decl_line endl {$$ = $8;}
 	;
 decl_stmt_g: 
-	DECL endl decl_line endl ENDDECL  { $$=opr(DECLARE_G,1,$3);}
+	{$$=NULL;}
+	| DECL endl decl_line endl ENDDECL  { $$=opr(DECLARE_G,1,$3);}
 	;
 ///////////////////////////////LOCAL//////////////////////////
 decl_stmt_l:
-	DECL endl decl_line endl ENDDECL  {$$ = opr(DECLARE_L,1,$3);}
+	{$$=NULL;}
+	| DECL endl decl_line endl ENDDECL  {$$ = opr(DECLARE_L,1,$3);}
+	;
 //////////////////////////
 read : 
 	READ '(' var ')' {$$ = opr(READ,1,$3);}
@@ -176,10 +179,10 @@ stmt:
 	| VARIABLE '=' expr ';'{/*printf("variable assignment\n");*/$$ = opr('=', 2, id($1), $3);}
 						
 	| PRINT pList';' { /*printf("trying to print\n");*/ $$ = $2;} 
-	| PRINT '(' STRING ')' ';' { $$ = opr(PRINTS,1,$3); }
+	| PRINT '(' STRING ')' ';' { /*printf("trying to print string\n");*/$$ = opr(PRINTS,1,$3); }
 	| IF expr endl THEN endl stmt_list endl ELSE endl stmt_list endl ENDIF ';' { /*printf("ifelse il keri\n") ;*/ $$ = opr(IF,3,$2,$6,$10);}
 	| IF expr endl THEN endl stmt_list endl  ENDIF ';' {   $$ = opr(IFL,2,$2,$6);}
-	| WHILE expr DO endl stmt_list endl ENDWHILE ';' { /*printf("while il keri \n");*/ $$ = opr(WHILE,2,$2,$5);}
+	| WHILE expr endl DO endl stmt_list endl ENDWHILE ';' { /*printf("while il keri \n");*/ $$ = opr(WHILE,2,$2,$6);}
 	| VARIABLE{/*printf("evdeya\n");*/$$=$1;}
 	|func_call ';'{$$=$1;}
 	| read ';' {$$ = $1;}
