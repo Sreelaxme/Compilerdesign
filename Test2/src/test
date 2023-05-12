@@ -1,17 +1,22 @@
 decl
-integer i,a,d;
-enddecl 
-
-integer sum(){
-    begin
-        print 1;
-    end
-}
-
+	integer a, b, c, i;
+enddecl
 
 integer main(){
 begin   
-    print 123;
-    sum();
+  a = 0;
+  b = 1;
+  i = 2;
+
+  write a;
+  write(b);
+
+  while i < 100 do
+    c = a + b;
+    a = b;
+    b = c;
+    write c;
+    i = i+1;
+  endwhile;
 end
 }
