@@ -20,7 +20,7 @@ test2: dir calculator
 test1: dir calculator
 	./bin/calc.out < src/1
 debug : bin/lex.yy.c bin/y.tab.c  bin/y.tab.h src/compiler.c
-		gcc -g bin/lex.yy.c bin/y.tab.c src/compiler.c src/syntaxTree.c src/param.c -o bin/calc.out
+		gcc -g bin/lex.yy.c bin/y.tab.c src/compiler.c src/toc.c src/syntaxTree.c src/param.c -o bin/calc.out
 		gdb ./bin/calc.out
 
 

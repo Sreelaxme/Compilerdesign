@@ -9,6 +9,10 @@ node *con(int value);
 node *id(char* var);
 int ex(node *p);
 void freeNode(node *p);
+
+int declare_array(char *, int );
+
+
 int declareFn(char* name, node* ptr);
 node* getFn(char* str);
 int updateFunStat(char* str,node* ptr);
@@ -112,7 +116,7 @@ endl:
 	;
 
 func_call:
-	 VARIABLE '(' param_list ')'  { $$=opr(CALL,2,$1,$3);}
+	 VARIABLE '(' param_list ')'  { $$=opr(CALL,2,$1,$3); /*printf("funcall aane\n");*/}
 	;
 Fdef:
 	return_type VARIABLE '('  arg_list ')' endl '{' endl decl_stmt_l endl Begin endl stmt_list endl RETURN expr ';' endl End endl '}' endl	
@@ -120,12 +124,13 @@ Fdef:
 	;
 //why not creating a node??
 varList:
-	| var {$$ = $1;}
+	 var {$$ = $1;}
 	//| VARIABLE ',' varList {/*printf("2 in VarList\n");*/$$ = opr(DECLARE_List, 2, opr(DECLARE,1,id($1)), $3);}
 	| var ',' varList {$$ = listVar($1,$3);}
+	;
 
 var:
-	| VARIABLE '[' NUMBER ']' {$$ = singletonVar($1,$3);}
+	 VARIABLE '[' NUMBER ']' {$$ = singletonVar($1,$3);}
 	|VARIABLE  {/*printf("1 in varList\n");*/$$ = singletonVar($1,0);}
 	;
 ///////
@@ -137,20 +142,19 @@ arg_list:
 
 param_list:
 	 {$$ = NULL;}
-	| expr{$$ = singletonPara($1);}
+	| expr{$$ = singletonPara($1);/*printf("evdem vannu\n");*/}
 	| expr ',' param_list {$$ = listPara($1,$3);}
 	;
 /////////////////
 pList:
-	expr {$$ = opr(PRINT, 1, $1);}
-	| expr ',' pList {$$ = opr(PRINT_List, 2, opr(PRINT,1,$1), $3);}
+	expr ',' pList {$$ = opr(PRINT_List, 2, opr(PRINT,1,$1), $3);}
+	|expr {$$ = opr(PRINT, 1, $1);}
 	;
 stmt_list:	
 		stmt endl {$$ = $1 ;}
 		|	stmt endl stmt_list{$$ = opr(STMNT , 2, $1 ,$3) ;}
 		
-		|	error ';' 		{printf("error\n") ; $$ = con(0)  ;}
-		|
+		|	error ';' 		{printf("tatement invalid\n") ; $$ = con(0)  ;}
 		;
 /////////////////////////////////GLOBAL DECLARATIONS/////////////////////////////
 decl_line:
@@ -175,7 +179,6 @@ read :
 stmt:
 	expr ';' { $$=$1;}
 	| VARIABLE '[' expr ']' '=' expr ';' {$$ = opr(ARRAY_ASSIGN,3,id($1),$3,$6);}
-	| decl_stmt_l {$$ = $1;}
 	| VARIABLE '=' expr ';'{/*printf("variable assignment\n");*/$$ = opr('=', 2, id($1), $3);}
 						
 	| PRINT pList';' { /*printf("trying to print\n");*/ $$ = $2;} 
@@ -183,7 +186,6 @@ stmt:
 	| IF expr endl THEN endl stmt_list endl ELSE endl stmt_list endl ENDIF ';' { /*printf("ifelse il keri\n") ;*/ $$ = opr(IF,3,$2,$6,$10);}
 	| IF expr endl THEN endl stmt_list endl  ENDIF ';' {   $$ = opr(IFL,2,$2,$6);}
 	| WHILE expr endl DO endl stmt_list endl ENDWHILE ';' { /*printf("while il keri \n");*/ $$ = opr(WHILE,2,$2,$6);}
-	| VARIABLE{/*printf("evdeya\n");*/$$=$1;}
 	|func_call ';'{$$=$1;}
 	| read ';' {$$ = $1;}
 	;
@@ -199,7 +201,7 @@ expr:
 	| expr '%' expr 		{  $$ = opr('%', 2, $1, $3);}
 	| expr '<' expr		{  $$ = opr('<', 2, $1, $3);}
 	| expr '>' expr		{ $$ = opr('>', 2, $1, $3); }
-	| '(' expr ')' { $$ = $2; }
+	| '(' expr ')' { /*printf("here alos?\n");*/$$ = $2; }
 	|	expr GREATERTHANOREQUAL expr { $$ = opr(GREATERTHANOREQUAL, 2, $1, $3);}
 	|	expr LESSTHANOREQUAL expr	{$$ = opr(LESSTHANOREQUAL, 2, $1, $3); }
 	|	expr NOTEQUAL expr			{ $$ = opr(NOTEQUAL, 2, $1, $3);}

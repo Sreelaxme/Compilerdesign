@@ -16,3 +16,5 @@
 - almost done
 - To run : 
     - try "make output" from compiler folder and the testcase in the test case file will be evaluated and printed in the output file
+
+- In the output file, currently the c code and the program output is being printed

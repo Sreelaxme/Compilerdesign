@@ -41,8 +41,10 @@ int lengthOfArgList(argListType *list)
     int i=0;
     while(ptr!=NULL)
     {
+        //printf("ARG VALUE%s",ptr->name);
         i++;
         ptr = ptr->next;
+        
     } 
     return i;
     
@@ -123,8 +125,8 @@ int lengthOfVarList(varItemtype *list)
     int i=0;
     while(ptr!=NULL)
     {
-        i++;
         ptr = ptr->next;
+        i++;
     } 
     return i;
     
@@ -133,7 +135,7 @@ void printarglist(struct arg_item *list) {
     argListType *ptr = list;
 
     while (ptr != NULL) {
-        fprintf(stdout, "%s %s", ptr->type, ptr->name);
+        fprintf(stdout, "int %s",  ptr->name);
         ptr = ptr->next;
         if (ptr != NULL) {
             fprintf(stdout, ", ");

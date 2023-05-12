@@ -30,7 +30,7 @@ void toC(node *p) {
         fprintf(stdout,"\nreturn ");
         toC(p->fn.ret_node); 
         fprintf(stdout,";");
-        fprintf(stdout,"\n}");
+        fprintf(stdout,"\n}\n");
         return ;
     }
  	case typeOpr:
@@ -48,8 +48,10 @@ void toC(node *p) {
             fprintf(stdout,"printf(\"\ ");
             int n =lengthOfArgList(p->opr.op[0]);
             char * str ="%";
+            //fprintf(stdout,"%d\n",n);
             for(int i =0;i<n;i++)
             {
+                
                 fprintf(stdout,"%sd",str);
             }
             fprintf(stdout,"\"\,");
@@ -132,24 +134,26 @@ void toC(node *p) {
 
 		// 					return ;
 		case DECLARE_Fn: {
-            fprintf(stdout,"%s\n",p->opr.op[0]->id.id);
+            fprintf(stdout,"\nint %s(",p->opr.op[0]);
                 printarglist(p->opr.op[1]->fn.arg_list);
-                fprintf(stdout,"){\n");
+                fprintf(stdout,")\n");
                                 toC(p->opr.op[1]);
-                                fprintf(stdout,"\n}\n");
+                                //fprintf(stdout,"\n}\n");
+                                //fprintf(stdout,"\n}\n");
 						return ;
         }
 		case Main: fprintf(stdout,"int main()\n"); toC(p->opr.op[0]);
 							// fprintf(stdout,"\n}\n"); 
 							return ;
 		case CALL: {
+            //printf("here?");
             fprintf(stdout,"%s(", p->opr.op[0]); 
             
             nodeItemtype * ptr = p->opr.op[1];
             
             while(ptr != NULL)
             {
-                fprintf(stdout,"%s",ptr->node_ptr->type);
+                //fprintf(stdout,"%s",ptr->node_ptr->type);
                 toC(ptr->node_ptr);
                 ptr = ptr->next;
                 if(ptr != NULL)
@@ -159,6 +163,7 @@ void toC(node *p) {
             }
 
             fprintf(stdout,")");
+            
             return;
         }
 
