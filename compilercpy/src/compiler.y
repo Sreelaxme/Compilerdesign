@@ -39,6 +39,7 @@ argListType * singlelineArg(varItemtype * l1,varItemtype *l2);
 
 extern struct sym *saveTab;
 extern struct sym symTab[100];
+	extern FILE * fp;
 %}
 
 
@@ -98,7 +99,7 @@ program:
 									ex($3);
 									printf("\nSymbol Table\n");
 									printSymTab();}
-	| program endl func_call endl {/*printSyntaxTree($3);*/ toC($3); ex($3);}
+	| program endl func_call endl 
 	| program endl decl_stmt_g endl { /*printSyntaxTree($3); */toC($3); ex($3);}
 	;
 return_type:
@@ -125,7 +126,6 @@ Fdef:
 //why not creating a node??
 varList:
 	 var {$$ = $1;}
-	//| VARIABLE ',' varList {/*printf("2 in VarList\n");*/$$ = opr(DECLARE_List, 2, opr(DECLARE,1,id($1)), $3);}
 	| var ',' varList {$$ = listVar($1,$3);}
 	;
 
@@ -149,12 +149,14 @@ param_list:
 pList:
 	expr ',' pList {$$ = opr(PRINT_List, 2, opr(PRINT,1,$1), $3);}
 	|expr {$$ = opr(PRINT, 1, $1);}
+	//| {$$=NULL;}
 	;
+
 stmt_list:	
 		stmt endl {$$ = $1 ;}
 		|	stmt endl stmt_list{$$ = opr(STMNT , 2, $1 ,$3) ;}
 		
-		|	error ';' 		{printf("tatement invalid\n") ; $$ = con(0)  ;}
+		|	error ';' 		{printf("statement invalid\n") ; $$ = con(0)  ;}
 		;
 /////////////////////////////////GLOBAL DECLARATIONS/////////////////////////////
 decl_line:
@@ -179,7 +181,7 @@ read :
 stmt:
 	expr ';' { $$=$1;}
 	| VARIABLE '[' expr ']' '=' expr ';' {$$ = opr(ARRAY_ASSIGN,3,id($1),$3,$6);}
-	| VARIABLE '=' expr ';'{/*printf("variable assignment\n");*/$$ = opr('=', 2, id($1), $3);}
+	| VARIABLE '=' expr ';'{$$ = opr('=', 2, id($1), $3);}
 						
 	| PRINT pList';' { /*printf("trying to print\n");*/ $$ = $2;} 
 	| PRINT '(' STRING ')' ';' { /*printf("trying to print string\n");*/$$ = opr(PRINTS,1,$3); }
@@ -191,7 +193,7 @@ stmt:
 	;
 expr:	
 	NUMBER { $$ = con($1); }
-	|VARIABLE {/*printf("thaan evde ano?\n");*/$$ = id($1);}
+	|VARIABLE {$$ = id($1);}
 	| VARIABLE '[' expr ']' {$$ = opr(INDEX,2,id($1),$3);}
 	| '-' expr %prec UMINUS { $$ = opr('-', 2, con(0), $2); }
 	| expr '+' expr { $$ = opr('+', 2, $1, $3); }
@@ -201,7 +203,7 @@ expr:
 	| expr '%' expr 		{  $$ = opr('%', 2, $1, $3);}
 	| expr '<' expr		{  $$ = opr('<', 2, $1, $3);}
 	| expr '>' expr		{ $$ = opr('>', 2, $1, $3); }
-	| '(' expr ')' { /*printf("here alos?\n");*/$$ = $2; }
+	| '(' expr ')' {$$ = $2; }
 	|	expr GREATERTHANOREQUAL expr { $$ = opr(GREATERTHANOREQUAL, 2, $1, $3);}
 	|	expr LESSTHANOREQUAL expr	{$$ = opr(LESSTHANOREQUAL, 2, $1, $3); }
 	|	expr NOTEQUAL expr			{ $$ = opr(NOTEQUAL, 2, $1, $3);}
@@ -314,8 +316,21 @@ void yyerror(char *s) {
 	  fprintf(stdout,"token %s\n", yytext);
 }
 
-int main(void) {
- yyparse();
- return 0;
-} 
 
+//int main(int argc, char* argv[]) {
+int main(void){
+		// if (argc > 1)
+		// {
+		// 	if (argv[1][1] == 'c')
+		// 	{
+		// 		fp = startcodegeneration(argv[2]);
+		// 	}
+			
+		// }
+		// else
+		// {
+		// 	fp = startcodegeneration("src/ccode/code.c");
+		// }
+		yyparse();
+		return 0;
+}

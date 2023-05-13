@@ -41,7 +41,7 @@ int lengthOfArgList(argListType *list)
     int i=0;
     while(ptr!=NULL)
     {
-        //printf("ARG VALUE%s",ptr->name);
+        //printf("ARG VALUE %s",ptr->name);
         i++;
         ptr = ptr->next;
         

@@ -17,7 +17,7 @@ FILE * startcodegeneration(char * dir)
 void toC(node *p) {
 //printf("Im in printSYntax");
  if (!p) {
-    
+    printf("\n");
 	return ;
  } 
  switch(p->type) {
@@ -35,23 +35,28 @@ void toC(node *p) {
     }
  	case typeOpr:
  	switch(p->opr.oper) {
-		case '+': toC(p->opr.op[0]); fprintf(stdout," + "); toC(p->opr.op[1]);/* fprintf(")");*/return ;
-		case '-': toC(p->opr.op[0]); fprintf(stdout," - "); toC(p->opr.op[1]);return ;
-		case '*': toC(p->opr.op[0]); fprintf(stdout," * "); toC(p->opr.op[1]);return ;
-		case '/': toC(p->opr.op[0]); fprintf(stdout," / "); toC(p->opr.op[1]); return ;
-        case '<': toC(p->opr.op[0]); fprintf(stdout," < "); toC(p->opr.op[1]); return ;
-        case '>': toC(p->opr.op[0]);fprintf(stdout," > "); toC(p->opr.op[1]);return ;
-        case '%': toC(p->opr.op[0]);  fprintf(stdout," %% ");toC(p->opr.op[1]);return ;
+		case '+': fprintf(stdout,"(");toC(p->opr.op[0]); fprintf(stdout," + "); toC(p->opr.op[1]);fprintf(stdout,")");/* fprintf(")");*/return ;
+		case '-':/*fprintf(stdout,"(");*/ toC(p->opr.op[0]); fprintf(stdout," - "); toC(p->opr.op[1]);/*fprintf(stdout,")")*/;return ;
+		case '*': fprintf(stdout,"(");toC(p->opr.op[0]); fprintf(stdout," * "); toC(p->opr.op[1]);fprintf(stdout,")");return ;
+		case '/': fprintf(stdout,"(");toC(p->opr.op[0]); fprintf(stdout," / "); toC(p->opr.op[1]);fprintf(stdout,")"); return ;
+        case '<': fprintf(stdout,"(");toC(p->opr.op[0]); fprintf(stdout," < "); toC(p->opr.op[1]);fprintf(stdout,")"); return ;
+        case '>': fprintf(stdout,"(");toC(p->opr.op[0]);fprintf(stdout," > "); toC(p->opr.op[1]);fprintf(stdout,")");return ;
+        case '%': fprintf(stdout,"(");toC(p->opr.op[0]);  fprintf(stdout," %% ");toC(p->opr.op[1]);fprintf(stdout,")");return ;
    
 		case '=':  toC(p->opr.op[0]); fprintf(stdout," = ");toC(p->opr.op[1]); fprintf(stdout,";"); /*fprintf("\n");*/return ;
 		case PRINT :  {
             fprintf(stdout,"printf(\"\ ");
-            int n =lengthOfArgList(p->opr.op[0]);
+            //int n =lengthOfArgList(p->opr.op[0]);
+            int n =1;
+            // while(p->opr.op[0])
+            // {
+            //     n++;
+            //     p->opr.op[0]=p->
+            // }
             char * str ="%";
             //fprintf(stdout,"%d\n",n);
             for(int i =0;i<n;i++)
             {
-                
                 fprintf(stdout,"%sd",str);
             }
             fprintf(stdout,"\"\,");
@@ -61,7 +66,7 @@ void toC(node *p) {
         case PRINTS : fprintf(stdout,"printf(\"%s",p->opr.op[0]); toC(p->opr.op[0]); fprintf(stdout,"\");\n"); return ;
 		case IF : 	{ 
 						fprintf(stdout,"if("); toC(p->opr.op[0]); fprintf(stdout,"){\n"); 
-						toC(p->opr.op[1]); fprintf(stdout,"}\nelse {\n");
+						toC(p->opr.op[1]); fprintf(stdout,"\n}\nelse {\n");
 						toC(p->opr.op[2]); fprintf(stdout,"}");
 						return;
 					}
@@ -82,17 +87,17 @@ void toC(node *p) {
             if (!list) {
                 fprintf(stdout, "");
             }
-            int firstVar = 1;
+           
             while (list != NULL) {
-                if (!firstVar) {
-                    fprintf(stdout, ", ");
-                }
+                
                 fprintf(stdout, "%s", list->name);
                 if (list->length > 0) {
                     fprintf(stdout, "[%d]", list->length);
                 }
                 list = list->next;
-                firstVar = 0;
+              if (list!=NULL) {
+                    fprintf(stdout, ", ");
+                }
             }
             fprintf(stdout, ";\n");
             return;
@@ -125,25 +130,15 @@ void toC(node *p) {
         }
 
         
-		// case DECLARE :  if(!decl)fprintf("DECL "); 
-		// 					decl++;
-		// 					toC(p->opr.op[0]);
-		// 					decl--;
-		// 					if(!decl)
-		// 					fprintf("\n");
-
-		// 					return ;
+	
 		case DECLARE_Fn: {
             fprintf(stdout,"\nint %s(",p->opr.op[0]);
                 printarglist(p->opr.op[1]->fn.arg_list);
                 fprintf(stdout,")\n");
                                 toC(p->opr.op[1]);
-                                //fprintf(stdout,"\n}\n");
-                                //fprintf(stdout,"\n}\n");
 						return ;
         }
 		case Main: fprintf(stdout,"int main()\n"); toC(p->opr.op[0]);
-							// fprintf(stdout,"\n}\n"); 
 							return ;
 		case CALL: {
             //printf("here?");

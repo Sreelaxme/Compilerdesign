@@ -124,6 +124,7 @@ int ex(node *p)
 				else
 					printError(er, 2, p);
 			}
+			return ;
 		}
 		case Main: 
 			declareFn("MAIN",p->opr.op[0]);
@@ -149,16 +150,16 @@ int ex(node *p)
 			ex(p->opr.op[0]);
 			ex(p->opr.op[1]);
 			return 0;
-		// case ARRAY_DECLARE:
-		// 	declare_array(p->opr.op[0]->id.id, ex(p->opr.op[1]));
-		// 	return ;
 		case ARRAY_ASSIGN:
 			//printf("IM here array assign\n");
 			update_arr(p->opr.op[0]->id.id, ex(p->opr.op[1]), ex(p->opr.op[2]));
 			return 0;
 		case INDEX:
 			return fetch_var_ar(p->opr.op[0]->id.id, ex(p->opr.op[1]));
+		
+		case READ: readinto(p->opr.op[0]); return 0;
 		}
+		
 	}
 	return 0;
 }

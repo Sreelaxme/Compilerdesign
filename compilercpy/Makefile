@@ -26,7 +26,13 @@ debug : bin/lex.yy.c bin/y.tab.c  bin/y.tab.h src/compiler.c
 
 
 output: dir calculator
-	@bin/calc.out < src/test > src/output
+	@bin/calc.out < src/test > bin/output.txt
+
+test_c:  dir bin/calc.out src/compiler.c src/syntaxTree.c src/param.c src/toc.c src/test
+	bin/calc.out -c temp.c < src/test
+	gcc temp.c -o temp.out
+	./temp.out > bin/output_c.txt
+	rm temp.out temp.c
 	
 %.c: %.y
 %.c: %.l 
