@@ -36,14 +36,14 @@ void toC(node *p) {
  	case typeOpr:
  	switch(p->opr.oper) {
 		case '+': fprintf(stdout,"(");toC(p->opr.op[0]); fprintf(stdout," + "); toC(p->opr.op[1]);fprintf(stdout,")");/* fprintf(")");*/return ;
-		case '-':/*fprintf(stdout,"(");*/ toC(p->opr.op[0]); fprintf(stdout," - "); toC(p->opr.op[1]);/*fprintf(stdout,")")*/;return ;
+		case '-':/*fprintf(stdout,"("); */toC(p->opr.op[0]); fprintf(stdout," - "); toC(p->opr.op[1]);/*fprintf(stdout,")");*/return ;
 		case '*': fprintf(stdout,"(");toC(p->opr.op[0]); fprintf(stdout," * "); toC(p->opr.op[1]);fprintf(stdout,")");return ;
 		case '/': fprintf(stdout,"(");toC(p->opr.op[0]); fprintf(stdout," / "); toC(p->opr.op[1]);fprintf(stdout,")"); return ;
         case '<': fprintf(stdout,"(");toC(p->opr.op[0]); fprintf(stdout," < "); toC(p->opr.op[1]);fprintf(stdout,")"); return ;
         case '>': fprintf(stdout,"(");toC(p->opr.op[0]);fprintf(stdout," > "); toC(p->opr.op[1]);fprintf(stdout,")");return ;
         case '%': fprintf(stdout,"(");toC(p->opr.op[0]);  fprintf(stdout," %% ");toC(p->opr.op[1]);fprintf(stdout,")");return ;
    
-		case '=':  toC(p->opr.op[0]); fprintf(stdout," = ");toC(p->opr.op[1]); fprintf(stdout,";"); /*fprintf("\n");*/return ;
+		case '=':  toC(p->opr.op[0]); fprintf(stdout," = ");toC(p->opr.op[1]);/* fprintf(stdout,";"); *//*fprintf("\n");*/return ;
 		case PRINT :  {
             fprintf(stdout,"printf(\"\ ");
             //int n =lengthOfArgList(p->opr.op[0]);
@@ -174,7 +174,8 @@ void toC(node *p) {
 		
 		case STMNT: { 
 						toC(p->opr.op[0]); 
-						fprintf(stdout,"\n"); toC(p->opr.op[1]);return; 
+						fprintf(stdout,"\n"); toC(p->opr.op[1]);
+                        toC()return; 
 					}
 		// case ARRAY_DECLARE : fprintf("ARR VAR "); fprintf(" %d", p->opr.op[1]->con.value);/*toC(p->opr.op[0]);fprintf(")");*/return ;
 		case ARRAY_ASSIGN : toC(p->opr.op[0]); fprintf(stdout,"[");toC(p->opr.op[1]);fprintf(stdout,"] = "); toC(p->opr.op[2]);fprintf(stdout,";\n");return ;

@@ -329,7 +329,7 @@ int main(void){
 		// }
 		// else
 		// {
-		// 	fp = startcodegeneration("src/ccode/code.c");
+		// 	fp = startcodegeneration("src/code.c");
 		// }
 		yyparse();
 		return 0;
