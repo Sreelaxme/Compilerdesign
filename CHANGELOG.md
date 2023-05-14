@@ -18,3 +18,15 @@
     - try "make output" from compiler folder and the testcase in the test case file will be evaluated and printed in the output file
 
 - In the output file, currently the c code and the program output is being printed
+
+
+-To run 
+	- cd compilercpy
+	 - make test —> gives c code in the terminal
+	(Give the testcase in test tile and run make test)
+	- make output —> prints the c code in bin/output.c
+
+	- make testc runs the c code and prints the output in the terminal
+- Uncomment line 98 to 101 in compiler.y, ex($3) in line 94 and 103 to obtain the program output without converting into c code 
+	- (make output) then the output.c will be contatining the program output and symbol table . 
+	

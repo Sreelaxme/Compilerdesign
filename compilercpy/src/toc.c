@@ -5,15 +5,15 @@
 #include <stdlib.h>
 node* getFn(char* str);
 int decl = 0;
-FILE * fp ;
+// FILE * fp ;
 
-FILE * startcodegeneration(char * dir)
-{
-	FILE * f = fopen(dir,"w+");
-	fprintf(f,"#include<stdio.h>\n\n");
-	return f;
-	//return stdout;
-}
+// FILE * startcodegeneration(char * dir)
+// {
+// 	FILE * f = fopen(dir,"w+");
+// 	fprintf(f,"#include<stdio.h>\n\n");
+// 	return f;
+// 	//return stdout;
+// }
 void toC(node *p) {
 //printf("Im in printSYntax");
  if (!p) {
@@ -36,7 +36,11 @@ void toC(node *p) {
  	case typeOpr:
  	switch(p->opr.oper) {
 		case '+': fprintf(stdout,"(");toC(p->opr.op[0]); fprintf(stdout," + "); toC(p->opr.op[1]);fprintf(stdout,")");/* fprintf(")");*/return ;
+<<<<<<< HEAD
 		case '-':/*fprintf(stdout,"("); */toC(p->opr.op[0]); fprintf(stdout," - "); toC(p->opr.op[1]);/*fprintf(stdout,")");*/return ;
+=======
+		case '-':fprintf(stdout,"("); toC(p->opr.op[0]); fprintf(stdout," - "); toC(p->opr.op[1]);fprintf(stdout,")");return ;
+>>>>>>> temp
 		case '*': fprintf(stdout,"(");toC(p->opr.op[0]); fprintf(stdout," * "); toC(p->opr.op[1]);fprintf(stdout,")");return ;
 		case '/': fprintf(stdout,"(");toC(p->opr.op[0]); fprintf(stdout," / "); toC(p->opr.op[1]);fprintf(stdout,")"); return ;
         case '<': fprintf(stdout,"(");toC(p->opr.op[0]); fprintf(stdout," < "); toC(p->opr.op[1]);fprintf(stdout,")"); return ;

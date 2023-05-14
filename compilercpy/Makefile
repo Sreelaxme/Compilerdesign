@@ -15,10 +15,7 @@ clean :
 	rm -rf bin
 test : dir calculator
 	./bin/calc.out < src/test
-test2: dir calculator
-	./bin/calc.out < src/prg 
-test1: dir calculator
-	./bin/calc.out < src/1
+
 debug : bin/lex.yy.c bin/y.tab.c  bin/y.tab.h src/compiler.c
 		gcc -g bin/lex.yy.c bin/y.tab.c src/compiler.c src/toc.c src/syntaxTree.c src/param.c -o bin/calc.out
 		gdb ./bin/calc.out
@@ -26,10 +23,13 @@ debug : bin/lex.yy.c bin/y.tab.c  bin/y.tab.h src/compiler.c
 
 
 output: dir calculator
-	@bin/calc.out < src/test > bin/output.txt
+	./bin/calc.out < src/test > bin/output.c
+testc: output
+	gcc -o bin/op bin/output.c
+	./bin/op
 
 test_c:  dir bin/calc.out src/compiler.c src/syntaxTree.c src/param.c src/toc.c src/test
-	bin/calc.out -c temp.c < src/test
+	./bin/calc.out -c temp.c < src/test
 	gcc temp.c -o temp.out
 	./temp.out > bin/output_c.txt
 	rm temp.out temp.c
