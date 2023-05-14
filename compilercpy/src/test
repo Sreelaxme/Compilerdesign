@@ -1,33 +1,22 @@
 decl
-	integer factorial(integer a);
-	integer no;
+	integer a[5],b[5],c[5],temp;
 enddecl
-
-integer factorial (integer a) {
-	decl
-		integer temp;
-	enddecl
-begin
-	if (a == 1) then temp = 1;
-	else temp = a*factorial(a-1);
-	endif;
-	return (temp);
-end
-}
-
 integer main(){
-decl
-	integer temp;
-enddecl
-begin	write("Enter a number\n");
-	//read(no);
-	no = 5;
-	temp = factorial (no);
-	write("Factorial of");
-	write(no);
-	write("=");
-	write(temp);
-	write("\n");
-	return 0;
+begin   
+       temp=0;
+	while temp < 5 do
+	       a[temp]=temp+2;	
+	       b[temp]=temp+5;
+               c[temp]= a[temp]+b[temp];
+		temp = temp + 1;
+	endwhile;
+         temp=3;
+	if temp < 3  then
+		write(c[1]);
+        else  
+                write c[4];
+        endif;
+
+        return 0;	
 end
 }

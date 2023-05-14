@@ -91,16 +91,16 @@ extern struct sym symTab[100];
 
 
 program:
-	|program endl Fdef endl {/*printf("prgrm 1 \n"*);printSyntaxTree($3); */ toC($3);ex($3);}
+	|program endl Fdef endl {/*printf("prgrm 1 \n"*);printSyntaxTree($3); */ toC($3);/*ex($3);*/}
 	|program endl main endl { /*printf("main\n");*/
 							//printSyntaxTree($3);
 							toC($3);
-							printf("\n\n\nPROGRAM OUTPUT \n"); 
+							/*printf("\n\n\nPROGRAM OUTPUT \n"); 
 									ex($3);
 									printf("\nSymbol Table\n");
-									printSymTab();}
+									printSymTab();*/}
 	| program endl func_call endl 
-	| program endl decl_stmt_g endl { /*printSyntaxTree($3); */toC($3); ex($3);}
+	| program endl decl_stmt_g endl { /*printSyntaxTree($3); */toC($3); /*ex($3);*/}
 	;
 return_type:
 	INT {$$=Int;}
@@ -331,6 +331,7 @@ int main(void){
 		// {
 		// 	fp = startcodegeneration("src/ccode/code.c");
 		// }
+		fprintf(stdout,"#include<stdio.h>\n");
 		yyparse();
 		return 0;
 }
